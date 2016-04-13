@@ -10,7 +10,7 @@ public class User {
     private String name;
     private String password;
     private boolean isAdmin;
-    private boolean firstLog;
+    private boolean forcePasswordChange;
     
     
     /**
@@ -18,12 +18,27 @@ public class User {
      * @param userName
      * @param password
      * @param admin
+     * @param change
      */
-    public User(String userName, String password, boolean admin, boolean fl){
+    public User(String userName, String password, boolean admin, boolean change){
         name = userName;
         this.password = password;
         isAdmin = admin;
-        firstLog = fl;
+        forcePasswordChange = change;
+    }
+    
+    /**
+     * Constructor
+     * @param userName
+     * @param password
+     * @param admin
+     * @param change
+     */
+    public User(String userName, String password, boolean admin){
+        name = userName;
+        this.password = password;
+        isAdmin = admin;
+        forcePasswordChange = true;
     }
     
     /**
@@ -32,7 +47,7 @@ public class User {
      */
     public void setPassword(String newPassword){
         password = newPassword;
-        firstLog = false;
+        forcePasswordChange = false;
     }
     
     /**
@@ -54,9 +69,12 @@ public class User {
         return this.name.equalsIgnoreCase(name);
     }
     
-    //Checks for whether the account has been used to log in previously. Used to see if password change is necessary
-    public boolean checkFirstLog(){
-        return firstLog;
+    /**
+     * Checks for whether account password change is necessary
+     * @return
+     */
+    public boolean passwordChangeNeeded(){
+        return forcePasswordChange;
     }
     
     /**
