@@ -1,9 +1,9 @@
-package log;
+package Log;
 
 /**
  * This is the User class for the program LOG.
  * @author Stephen
- * Minor changes by Chris
+ * Changes by Chris & Matt
  */
 public class User {
     
@@ -83,6 +83,14 @@ public class User {
      */
     public String getName(){
         return name;
+    }
+    
+    /**
+     * Returns admin status.
+     * @return 
+     */
+    public Boolean userStatus(){
+        return isAdmin;
     }
     
 }
