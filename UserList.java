@@ -65,7 +65,7 @@ public class UserList {
          * @return
          * @throws WrongCredentialsException 
          */
-	Boolean checkUserCredentials(String username, String password) throws WrongCredentialsException{
+	Boolean checkUserCredentials(String username, String password){
 		for(int i = 0; i < userbase.size();i++){
 			if(userbase.get(i).userEquals(username) && userbase.get(i).passwordEquals(password)){
 				return true;
