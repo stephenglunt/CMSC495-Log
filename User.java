@@ -1,4 +1,4 @@
-package Log;
+package log;
 
 /**
  * This is the User class for the program LOG.
@@ -10,8 +10,7 @@ public class User {
     private String name;
     private String password;
     private boolean isAdmin;
-    private boolean forcePasswordChange;
-    
+    private boolean forcePasswordChange; 
     
     /**
      * Constructor
@@ -47,7 +46,7 @@ public class User {
      */
     public void setPassword(String newPassword){
         password = newPassword;
-        forcePasswordChange = false;
+        forcePasswordChange = false; //TEMPORARILY disabling unforcing change for testing purposes
     }
     
     /**
@@ -92,5 +91,22 @@ public class User {
     public Boolean userStatus(){
         return isAdmin;
     }
+    
+    // Returns User information for writing to Users.txt
+    public String toString(){
+    	String status = "b";
+    	String firstTime = "n";
+    	// Check if user is admin
+    	if (this.isAdmin){
+    		status = "a";
+    	}
+    	// Check if user needs password reset
+    	if (passwordChangeNeeded()){
+    		firstTime = "f";
+    	}
+    	// Example: Mlaclair 123abc af
+		String output = name + " " + password + " " + status + firstTime;
+		return output;
+	}
     
 }
