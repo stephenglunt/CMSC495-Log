@@ -1,8 +1,10 @@
 package Log;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,10 +29,13 @@ public class LOG extends JFrame{
     JTextField username = new JTextField (15);
     JLabel pass = new JLabel("Password");
     JTextField password = new JTextField (15);
+    JLabel passConfirm = new JLabel("Confirm Password");
+    JTextField passwordConfirm = new JTextField (15);
     JButton logoutButton = new JButton ("Logout");
     JButton viewLogEntries = new JButton ("View Log Entries");
     JButton createLogEntry = new JButton ("Create Log Entry");
     JButton accountManagement = new JButton ("Account Management");
+    JButton save = new JButton ("Save");
     
     // Create GUI/compile userbase
     public LOG() {
@@ -43,7 +48,7 @@ public class LOG extends JFrame{
 	        panel.add(pass);
 	        panel.add (password);
 	        panel.add (loginButton);
-	        this.add(panel);
+	        this.add(panel, BorderLayout.PAGE_START);
 	        
 		    //Create GUI
 		    setTitle ("LOG");
@@ -67,7 +72,7 @@ public class LOG extends JFrame{
 	                    if (current.passwordChangeNeeded()){
 	                    	JOptionPane.showMessageDialog(frame, "Password must be changed!",
 	                    			"First Time Login Notification",JOptionPane.WARNING_MESSAGE);
-	                        //Call userList.changePassword(u)
+	                    	changePassword(userList, current);
 	                    }
 	            	}
 	            	// Invalid login
@@ -101,7 +106,29 @@ public class LOG extends JFrame{
         }
     }
     
-    // Main menu method
+    // Change password method
+    protected void changePassword(UserList listClass, User current) {
+    	// Remove main menu options/add password change boxes
+    	panel.removeAll();
+    	password.setText("");
+    	passwordConfirm.setText("");
+    	panel.add(pass);
+    	panel.add(password);
+    	panel.add(passConfirm);
+    	panel.add(passwordConfirm);
+    	panel.revalidate();
+		panel.repaint();
+		
+		// Needs if statement to make sure passwords match before passing for password change
+		listClass.changePassword(current, passwordConfirm.getText() );
+		// Call main menu again to restore buttons after password change
+		//mainMenu();
+		
+		//if they don't match, recall this method to startover again possibly?
+		
+	}
+
+	// Main menu method
     protected void mainMenu() {
 		// Remove login buttons
 		panel.removeAll();
@@ -118,7 +145,6 @@ public class LOG extends JFrame{
 		panel.revalidate();
 		panel.repaint();
 	}
-
 
 	// Main method
     public static void main(String[] args) throws IOException{
