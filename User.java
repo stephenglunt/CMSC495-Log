@@ -1,4 +1,4 @@
-package log;
+package Log;
 
 /**
  * This is the User class for the program LOG.
@@ -92,21 +92,24 @@ public class User {
         return isAdmin;
     }
     
-    // Returns User information for writing to Users.txt
+    /**
+     * Returns the user class formatted for input into file.
+     * @return 
+     */
+    @Override
     public String toString(){
-    	String status = "b";
+        String status = "b";
     	String firstTime = "n";
     	// Check if user is admin
-    	if (this.isAdmin){
-    		status = "a";
-    	}
+    	if(this.isAdmin)
+            status = "a";
     	// Check if user needs password reset
-    	if (passwordChangeNeeded()){
-    		firstTime = "f";
-    	}
+    	if(passwordChangeNeeded())
+            firstTime = "f";
+    	
     	// Example: Mlaclair 123abc af
-		String output = name + " " + password + " " + status + firstTime;
-		return output;
-	}
+        String output = name + " " + password + " " + status + firstTime;
+        return output;
+    }
     
 }
