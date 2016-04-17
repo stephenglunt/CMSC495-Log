@@ -148,7 +148,7 @@ public class LOG extends JFrame{
             });
 	        
 	      //Catch file read error
-    	} catch (IOException e) {
+    	} catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error During File Read", "Error During File Read", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
