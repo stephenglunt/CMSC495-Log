@@ -3,15 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package log;
+package Log;
 
 /**
  *
  * @author Stephen
  */
-class WrongCredentialsException extends Exception {
+class PasswordChangeException extends Exception {
+    public String title;
+    public String message;
 
-    public WrongCredentialsException(String username) {
+    public PasswordChangeException(String ttl, String msg) {
+        title = ttl;
+        message = msg;
     }
     
 }
