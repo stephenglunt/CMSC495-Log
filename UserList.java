@@ -60,12 +60,11 @@ public class UserList {
 	
     /**
      * This compares the username and password with that of every user in
-     * the userlist and returns true if there is a match.  Throws an 
-     * exception if there is no match.
+     * the userlist and returns true if there is a match.  Returns true if 
+     * match/false if name and password do not match
      * @param username
      * @param password
      * @return
-     * @throws WrongCredentialsException 
      */
     Boolean checkUserCredentials(String username, String password){
     	for(int i = 0; i < userbase.size();i++){
