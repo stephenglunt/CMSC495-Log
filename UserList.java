@@ -37,7 +37,7 @@ public class UserList {
                 //There should be 3 groups of characters and the last group
                 //should have only two characters in them. If not throw exception
                 if((words.length != 3) || (words[2].length() != 2)){
-                    throw new FileFormatException(filePath + "/Users.txt");
+                    throw new FileFormatException("/Users.txt");
                 }
 
                 String u = words[0];
