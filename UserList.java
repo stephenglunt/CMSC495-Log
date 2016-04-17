@@ -23,7 +23,7 @@ public class UserList {
      * Creates array of User objects from file.
      * @throws IOException 
      */
-    public UserList() throws IOException{
+    public UserList() throws IOException, FileFormatException{
     	FileReader fr = new FileReader("Users.txt");
     	BufferedReader br = new BufferedReader(fr);;
         String userline = null;
@@ -37,7 +37,7 @@ public class UserList {
                 //There should be 3 groups of characters and the last group
                 //should have only two characters in them. If not throw exception
                 if((words.length != 3) || (words[2].length() != 2)){
-                    throw new fileFormatException(filePath + "/Users.txt");
+                    throw new FileFormatException(filePath + "/Users.txt");
                 }
 
                 String u = words[0];
