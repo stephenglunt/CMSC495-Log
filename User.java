@@ -3,14 +3,15 @@ package Log;
 /**
  * This is the User class for the program LOG.
  * @author Stephen
- * Changes by Chris & Matt
+ * Minor changes by Chris
  */
 public class User {
     
     private String name;
     private String password;
     private boolean isAdmin;
-    private boolean forcePasswordChange; 
+    private boolean forcePasswordChange;
+    
     
     /**
      * Constructor
@@ -46,7 +47,7 @@ public class User {
      */
     public void setPassword(String newPassword){
         password = newPassword;
-        forcePasswordChange = false; //TEMPORARILY disabling unforcing change for testing purposes
+        forcePasswordChange = false;
     }
     
     /**
@@ -85,14 +86,6 @@ public class User {
     }
     
     /**
-     * Returns admin status.
-     * @return 
-     */
-    public Boolean userStatus(){
-        return isAdmin;
-    }
-    
-    /**
      * Returns the user class formatted for input into file.
      * @return 
      */
@@ -110,6 +103,22 @@ public class User {
     	// Example: Mlaclair 123abc af
         String output = name + " " + password + " " + status + firstTime;
         return output;
+    }
+
+    /**
+     * Returns true if user is admin.
+     * @return 
+     */
+    Boolean userStatus() {
+        return isAdmin;
+    }
+
+    /**
+     * Sets the status of the user to admin if passed variable is true.
+     * @param admin 
+     */
+    void setStatus(Boolean admin) {
+        isAdmin = admin;
     }
     
 }

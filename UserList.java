@@ -1,6 +1,7 @@
-package log;
+package Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,15 +18,16 @@ import javax.swing.JOptionPane;
  */
 public class UserList {
     List<User> userbase = new ArrayList<User>();
-	
+
     /**
      * Constructor
      * Creates array of User objects from file.
      * @throws IOException 
      */
     public UserList() throws IOException, FileFormatException{
-    	FileReader fr = new FileReader("Users.txt");
-    	BufferedReader br = new BufferedReader(fr);;
+        String filePath = new File("").getAbsolutePath();
+        FileReader fr = new FileReader(filePath + "/Users.txt");
+        BufferedReader br = new BufferedReader(fr);
         String userline = null;
         //reading user info from file and filling userbase appropriately
         while((userline = br.readLine()) != null) {
@@ -37,7 +39,7 @@ public class UserList {
                 //There should be 3 groups of characters and the last group
                 //should have only two characters in them. If not throw exception
                 if((words.length != 3) || (words[2].length() != 2)){
-                    throw new FileFormatException("Users.txt");
+                    throw new FileFormatException(filePath + "/Users.txt");
                 }
 
                 String u = words[0];
@@ -51,13 +53,13 @@ public class UserList {
                 if(words[2].charAt(1)=='f')
                     f = true;
                 else f = false;
-                
+
                 userbase.add(new User(u, p, a, f));
             }
         }
         br.close();
     }
-	
+
     /**
      * This compares the username and password with that of every user in
      * the userlist and returns true if there is a match.  Returns true if 
@@ -67,14 +69,14 @@ public class UserList {
      * @return
      */
     Boolean checkUserCredentials(String username, String password){
-    	for(int i = 0; i < userbase.size();i++){
+        for(int i = 0; i < userbase.size();i++){
             if(userbase.get(i).userEquals(username) && userbase.get(i).passwordEquals(password)){
-		return true;
-	    }
-	}
-	    return false;
+                return true;
+            } 
+        }
+        return false;
     }
-	
+
     /**
      * This returns a User object that has the same name as the passed
      * parameter.  Returns null if user not found.
@@ -82,11 +84,11 @@ public class UserList {
      * @return 
      */
     public User getUser(String username){
-	for(int i = 0; i < userbase.size();i++){
-	    User user = userbase.get(i);
-	    if(user.userEquals(username)){
-	        return user;
-	    }
+        for(int i = 0; i < userbase.size();i++){
+            User user = userbase.get(i);
+            if(user.userEquals(username)){
+                    return user;
+            }
         }
         return null;
     }
@@ -98,8 +100,12 @@ public class UserList {
      * @param password
      * @param admin 
      */
-    public void addUser(String username, String password, Boolean admin){
+    public void addUser(String username, String password, Boolean admin) throws DuplicateUserException{
         User u = new User(username, password, admin);
+        for(int i = 0; i < userbase.size(); i++){
+            if(userbase.get(i).userEquals(username))
+                throw new DuplicateUserException(username);
+        }
         userbase.add(u);
         try {
             updateUserFile();
@@ -117,8 +123,17 @@ public class UserList {
      * UserList and updates the Users.txt file.
      * @param u 
      */
-    public void deleteUser(User u){
-		
+    public void deleteUser(String username){
+        userbase.remove(getUser(username));
+        try {
+            updateUserFile();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            ex.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(null, "Successfully deleted user", 
+                "User List Updated", JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -141,8 +156,24 @@ public class UserList {
     /**
      * Changes status i.e. admin or not
      * @param username 
+     * @param admin
      */
-    public void changeStatus(String username){
+    public void setStatus(String username, Boolean admin){
+        getUser(username).setStatus(admin);
+        try {
+            updateUserFile();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            ex.printStackTrace();
+        }
+        String status;
+        if(admin)
+            status = "admin.";
+        else
+            status = "basic user.";
+        JOptionPane.showMessageDialog(null, "Successfully changed user status to " + status, 
+                "User List Updated", JOptionPane.WARNING_MESSAGE);
 
     }
 
