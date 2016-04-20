@@ -27,6 +27,7 @@ public class LOG extends JFrame{
     boolean login = false;
     User current = null;
     JFrame frame;
+    JScrollPane scrollPane;
     JPanel panel = new JPanel();
     JButton loginButton = new JButton ("Login");
     JLabel user = new JLabel("Username");
@@ -108,6 +109,7 @@ public class LOG extends JFrame{
 	    // Listener for logout
             logoutButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
+                	scrollPane.removeAll();
                     login = false;
                     panel.removeAll();
                     username.setText("");
@@ -117,8 +119,8 @@ public class LOG extends JFrame{
                     panel.add(pass);
                     panel.add (password);
                     panel.add (loginButton);
-                    panel.revalidate();
-                    panel.repaint();
+                    revalidate();
+                    repaint();
                 }
             });
                 
@@ -146,7 +148,14 @@ public class LOG extends JFrame{
                 }
             });
             
-            // Call log entry page
+            // Call log entry creation page
+            createLogEntry.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    createLogEntry();
+                }
+            });
+            
+            // Call view log entries page
             viewLogEntries.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     viewLogEntries();
@@ -156,14 +165,12 @@ public class LOG extends JFrame{
             // Call account management page
             accountManagement.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
-                    accountManage();
-                    
+                    accountManage();   
                 }
             });
             
             // Call main menu page
             mainMenu.addActionListener(new ActionListener(){
-
                 public void actionPerformed (ActionEvent e){
                     mainMenu();
                 }
@@ -190,7 +197,15 @@ public class LOG extends JFrame{
         }
     }
     
-    //Log entries window
+    //Log creation window
+    protected void createLogEntry() {
+    	panel.remove(createLogEntry);
+        scrollPane.setVisible(false);
+        revalidate();
+        repaint();
+	}
+
+	//Log entries window
     protected void viewLogEntries() {
     	try{
     		//Compile entries
@@ -198,7 +213,7 @@ public class LOG extends JFrame{
     		//Build panel of entries
 	    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
 	    	//Create text scroll pane
-	        JScrollPane scrollPane = new JScrollPane (entryPanel);
+	        scrollPane = new JScrollPane (entryPanel);
 	    	this.add(scrollPane,BorderLayout.CENTER);
 	    	validate();
 	    	repaint();
@@ -235,12 +250,13 @@ public class LOG extends JFrame{
      */
     protected void accountManage(){
         panel.removeAll();
+        scrollPane.setVisible(false);
         panel.add(addUser);
         panel.add(viewUsers);
         panel.add(editUser);
         panel.add(mainMenu);
-        panel.revalidate();
-        panel.repaint();
+        revalidate();
+        repaint();
         
     }
     
@@ -361,6 +377,8 @@ public class LOG extends JFrame{
 
     // Main menu method
     protected void mainMenu(){
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
         // Remove login buttons
         panel.removeAll();
         System.out.println("Welcome, " + current.getName() + "!"); //CURRENTLY JUST TESTING, should probably print elsewhere
@@ -373,8 +391,8 @@ public class LOG extends JFrame{
             panel.add(accountManagement);
         }
         panel.add(logoutButton);
-        panel.revalidate();
-        panel.repaint();
+        revalidate();
+        repaint();
     }
 
 	// Main method
