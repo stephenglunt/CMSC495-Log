@@ -1,16 +1,19 @@
-package Log;
+package log;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.awt.Checkbox;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 /**
@@ -50,7 +53,19 @@ public class LOG extends JFrame{
     	try {
             // Compile userbase
             userList = new UserList();
+            
             // Add fields/buttons to GUI
+            panel.setBorder(BorderFactory.createRaisedBevelBorder());
+            loginButton.setBorder(BorderFactory.createRaisedBevelBorder());
+            logoutButton.setBorder(BorderFactory.createRaisedBevelBorder());
+            viewLogEntries.setBorder(BorderFactory.createRaisedBevelBorder());
+            createLogEntry.setBorder(BorderFactory.createRaisedBevelBorder());
+            accountManagement.setBorder(BorderFactory.createRaisedBevelBorder());
+            savePassword.setBorder(BorderFactory.createRaisedBevelBorder());
+            addUser.setBorder(BorderFactory.createRaisedBevelBorder());
+            mainMenu.setBorder(BorderFactory.createRaisedBevelBorder());
+            viewUsers.setBorder(BorderFactory.createRaisedBevelBorder());
+            editUser.setBorder(BorderFactory.createRaisedBevelBorder());
             panel.add(user);
             panel.add (username);
             panel.add(pass);
@@ -69,8 +84,7 @@ public class LOG extends JFrame{
             //Add listeners to buttons
             //Login listener
 	    loginButton.addActionListener (new ActionListener () {
-                @Override
-	        public void actionPerformed (ActionEvent e) {
+                public void actionPerformed (ActionEvent e) {
                 // Check if login is valid
                 if(userList.checkUserCredentials(username.getText(), password.getText())){
                     current = userList.getUser(username.getText());
@@ -93,7 +107,6 @@ public class LOG extends JFrame{
 	        
 	    // Listener for logout
             logoutButton.addActionListener (new ActionListener () {
-                @Override
                 public void actionPerformed (ActionEvent e) {
                     login = false;
                     panel.removeAll();
@@ -111,7 +124,6 @@ public class LOG extends JFrame{
                 
             //Listener for password change confirmation
             savePassword.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed (ActionEvent e){
                     try {
                         if(!(password.getText().equals(passwordConfirm.getText()))) //checking for password match
@@ -134,29 +146,38 @@ public class LOG extends JFrame{
                 }
             });
             
+            // Call log entry page
+            viewLogEntries.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    viewLogEntries();
+                }
+            });
+            
+            // Call account management page
             accountManagement.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed (ActionEvent e){
                     accountManage();
                     
                 }
             });
             
+            // Call main menu page
             mainMenu.addActionListener(new ActionListener(){
-                @Override
+
                 public void actionPerformed (ActionEvent e){
                     mainMenu();
                 }
             });
             
+            // Call add user function
             addUser.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     addUser();
                 }
             });
             
+         // Call edit user function
             editUser.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed (ActionEvent e){
                     findUser();
                 }
@@ -169,7 +190,25 @@ public class LOG extends JFrame{
         }
     }
     
-    /**
+    //Log entries window
+    protected void viewLogEntries() {
+    	try{
+    		//Compile entries
+    		EntryList entryList = new EntryList();
+    		//Build panel of entries
+	    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
+	    	//Create text scroll pane
+	        JScrollPane scrollPane = new JScrollPane (entryPanel);
+	    	this.add(scrollPane,BorderLayout.CENTER);
+	    	validate();
+	    	repaint();
+    	} catch (IOException | FileFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error During File Read", "Error During File Read", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+	}
+
+	/**
      * Brings up the Change Password menu
      * @param listClass
      * @param current 
@@ -200,12 +239,12 @@ public class LOG extends JFrame{
         panel.add(viewUsers);
         panel.add(editUser);
         panel.add(mainMenu);
-        
         panel.revalidate();
         panel.repaint();
         
     }
     
+    // Find user method
     protected void findUser(){
         JButton findUser = new JButton("Search");
         findUser.addActionListener(new ActionListener(){
@@ -241,6 +280,7 @@ public class LOG extends JFrame{
         
     }
     
+    // Edit user method
     protected void editUser(String username){
         User userObjct = userList.getUser(username);
         JButton delete = new JButton("Delete User");
@@ -249,25 +289,24 @@ public class LOG extends JFrame{
         Checkbox isAdmin = new Checkbox("Admin");
         isAdmin.setState(userObjct.userStatus());
         
-        
+        // Delete user listener
         delete.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed (ActionEvent e){
                 userList.deleteUser(username);
                 accountManage();
             }
         });
         
+        // Status change listener
         update.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed (ActionEvent e){
                 userList.setStatus(username, isAdmin.getState());
                 accountManage();
             }
         });
         
+        // Password change listener
         chngPswd.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed (ActionEvent e){
                 changePassword(userList, userObjct);
                 accountManage();
@@ -275,9 +314,7 @@ public class LOG extends JFrame{
         });
         
         panel.removeAll();
-        
         panel.add(new JLabel(username));
-        
         panel.add(isAdmin);
         panel.add(delete);
         panel.add(update);
@@ -306,8 +343,8 @@ public class LOG extends JFrame{
         panel.add(isAdmin);
         panel.add(submit);
         
+        // Submit button listener
         submit.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed (ActionEvent e){
                 try {
                     userList.addUser(username.getText(), password.getText(), isAdmin.getState());
