@@ -2,6 +2,7 @@ package log;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -12,7 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -27,13 +30,16 @@ public class LOG extends JFrame{
     User current = null;
     User userObjct = null;
     JFrame frame;
-    JScrollPane scrollPane;
+    JTextArea textArea;
+    JScrollPane scrollPane = null;
     Checkbox isAdmin;
     JPanel panel = new JPanel();
+    JPanel panelBottom = new JPanel();
     JButton loginButton = new JButton ("Login");
     JLabel user = new JLabel("Username");
     JTextField username = new JTextField (15);
     JLabel pass = new JLabel("Password");
+    JPasswordField passwordHidden = new JPasswordField (15);
     JTextField password = new JTextField (15);
     JLabel passConfirm = new JLabel("Confirm Password");
     JTextField passwordConfirm = new JTextField (15);
@@ -43,6 +49,7 @@ public class LOG extends JFrame{
     JButton deleteAllEntries = new JButton ("Delete All Log Entries");
     JButton accountManagement = new JButton ("Account Management");
     JButton savePassword = new JButton ("Save Password");
+    JButton saveEntry = new JButton ("Save Entry");
     JButton addUser = new JButton ("Add User");//
     JButton mainMenu = new JButton("Main Menu");
     JButton viewUsers = new JButton("View Users");
@@ -61,6 +68,7 @@ public class LOG extends JFrame{
             
             // Add fields/buttons to GUI
             panel.setBorder(BorderFactory.createRaisedBevelBorder());
+            panelBottom.setBorder(BorderFactory.createRaisedBevelBorder());
             loginButton.setBorder(BorderFactory.createRaisedBevelBorder());
             logoutButton.setBorder(BorderFactory.createRaisedBevelBorder());
             viewLogEntries.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -72,12 +80,15 @@ public class LOG extends JFrame{
             viewUsers.setBorder(BorderFactory.createRaisedBevelBorder());
             editUser.setBorder(BorderFactory.createRaisedBevelBorder());
             deleteAllEntries.setBorder(BorderFactory.createRaisedBevelBorder());
+            saveEntry.setBorder(BorderFactory.createRaisedBevelBorder());
+            saveEntry.setBackground(Color.GREEN);
             panel.add(user);
             panel.add (username);
             panel.add(pass);
-            panel.add (password);
+            panel.add (passwordHidden);
             panel.add (loginButton);
             this.add(panel, BorderLayout.PAGE_START);
+            this.add(panelBottom, BorderLayout.PAGE_END);
 	        
             //Create GUI
             setTitle ("LOG");
@@ -92,7 +103,8 @@ public class LOG extends JFrame{
 	    loginButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
                 // Check if login is valid
-                if(userList.checkUserCredentials(username.getText(), password.getText())){
+                String password = new String(passwordHidden.getPassword());
+                if(userList.checkUserCredentials(username.getText(), password)){
                     current = userList.getUser(username.getText());
                     login = true;
                     mainMenu();
@@ -119,11 +131,11 @@ public class LOG extends JFrame{
                     login = false;
                     panel.removeAll();
                     username.setText("");
-                    password.setText("");
+                    passwordHidden.setText("");
                     panel.add(user);
                     panel.add (username);
                     panel.add(pass);
-                    panel.add (password);
+                    panel.add (passwordHidden);
                     panel.add (loginButton);
                     revalidate();
                     repaint();
@@ -237,19 +249,39 @@ public class LOG extends JFrame{
 	//Log creation window
     protected void createLogEntry() {
     	//Update GUI
-    	panel.remove(createLogEntry);
-    	if(scrollPane != null)
+    	if(scrollPane != null){
     		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
+    	textArea = new JTextArea(5, 20);
+    	scrollPane = new JScrollPane(textArea);
+    	scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+    	panelBottom.add(saveEntry,BorderLayout.PAGE_END);
         revalidate();
         repaint();
+        
+     // Call edit user function
+        saveEntry.addActionListener(new ActionListener(){
+            public void actionPerformed (ActionEvent e){
+                entryList.createLogEntry(current.getName(),textArea.getText());
+                mainMenu();
+            }
+        });
 	}
 
 	//Log entries window
     protected void viewLogEntries() {
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
+    	panelBottom.removeAll();
 		//Build panel of entries
     	JPanel entryPanel = entryList.displayEntries(current.userStatus());
     	//Create text scroll pane
         scrollPane = new JScrollPane (entryPanel);
+        scrollPane.revalidate();
     	this.add(scrollPane,BorderLayout.CENTER);
     	validate();
     	repaint();
@@ -281,6 +313,7 @@ public class LOG extends JFrame{
      * Launches the Account Management interface - still needs work.
      */
     protected void accountManage(){
+    	panelBottom.removeAll();
         panel.removeAll();
     	if(scrollPane != null)
     		scrollPane.removeAll();
@@ -410,10 +443,14 @@ public class LOG extends JFrame{
 
     // Main menu method
     protected void mainMenu(){
-    	if(scrollPane != null)
+    	//Clear screen
+    	panelBottom.removeAll();
+    	if(scrollPane != null){
     		scrollPane.removeAll();
-        // Remove login buttons
+    		this.remove(scrollPane);
+    	}
         panel.removeAll();
+        
         System.out.println("Welcome, " + current.getName() + "!"); //CURRENTLY JUST TESTING, should probably print elsewhere
         System.out.println("Admin? " + current.userStatus());
         // Switch to main menu
