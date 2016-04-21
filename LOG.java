@@ -1,11 +1,10 @@
 package log;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Checkbox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.awt.Checkbox;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -26,8 +25,10 @@ public class LOG extends JFrame{
     private static final long serialVersionUID = 1L;
     boolean login = false;
     User current = null;
+    User userObjct = null;
     JFrame frame;
     JScrollPane scrollPane;
+    Checkbox isAdmin;
     JPanel panel = new JPanel();
     JButton loginButton = new JButton ("Login");
     JLabel user = new JLabel("Username");
@@ -39,6 +40,7 @@ public class LOG extends JFrame{
     JButton logoutButton = new JButton ("Logout");
     JButton viewLogEntries = new JButton ("View Log Entries");
     JButton createLogEntry = new JButton ("Create Log Entry");
+    JButton deleteAllEntries = new JButton ("Delete All Log Entries");
     JButton accountManagement = new JButton ("Account Management");
     JButton savePassword = new JButton ("Save Password");
     JButton addUser = new JButton ("Add User");//
@@ -46,14 +48,16 @@ public class LOG extends JFrame{
     JButton viewUsers = new JButton("View Users");
     JButton editUser = new JButton("Edit User");
     UserList userList;
+    EntryList entryList;
     
     /**
      * This creates the GUI and userList which is loaded from Users.txt
      */
     public LOG() {
     	try {
-            // Compile userbase
+            // Compile userbase & entrybase
             userList = new UserList();
+            entryList = new EntryList();
             
             // Add fields/buttons to GUI
             panel.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -67,6 +71,7 @@ public class LOG extends JFrame{
             mainMenu.setBorder(BorderFactory.createRaisedBevelBorder());
             viewUsers.setBorder(BorderFactory.createRaisedBevelBorder());
             editUser.setBorder(BorderFactory.createRaisedBevelBorder());
+            deleteAllEntries.setBorder(BorderFactory.createRaisedBevelBorder());
             panel.add(user);
             panel.add (username);
             panel.add(pass);
@@ -109,7 +114,8 @@ public class LOG extends JFrame{
 	    // Listener for logout
             logoutButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
-                	scrollPane.removeAll();
+                	if(scrollPane != null)
+                		scrollPane.removeAll();
                     login = false;
                     panel.removeAll();
                     username.setText("");
@@ -134,8 +140,11 @@ public class LOG extends JFrame{
                             throw new PasswordChangeException("Invalid Password", "Passwords cannot contain spaces.");
                         if(password.getText().length()==0)
                             throw new PasswordChangeException("No Password", "No password entered.");
-                        
-                        userList.changePassword(current, passwordConfirm.getText());
+                        if(userObjct != null){
+                        	userList.changePassword(userObjct, passwordConfirm.getText());
+                        }else{
+                        	userList.changePassword(current, passwordConfirm.getText());
+                        }
                         JOptionPane.showMessageDialog(frame, "Password change complete!",
                                 "Accepted Password",JOptionPane.WARNING_MESSAGE);
                         
@@ -169,6 +178,13 @@ public class LOG extends JFrame{
                 }
             });
             
+            // Call delete all log page
+            deleteAllEntries.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    deleteAllLogEntries();
+                }
+            });
+            
             // Call main menu page
             mainMenu.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
@@ -197,38 +213,54 @@ public class LOG extends JFrame{
         }
     }
     
-    //Log creation window
+    //Delete all log entry window
+    protected void deleteAllLogEntries() {
+    	//Update GUI
+		panel.remove(deleteAllEntries);
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
+    	String[] options = new String[] {"Yes", "No"};
+        int selection = JOptionPane.showOptionDialog(null, "This CANNOT be undone. Are you sure?", "Delete All Log Entries",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[0]);
+        revalidate();
+        repaint();
+       if(selection == 0){
+    	   entryList.deleteAllLogEntries();
+    	   mainMenu();
+       }
+       else{
+    	   mainMenu();
+       }
+	}
+
+	//Log creation window
     protected void createLogEntry() {
+    	//Update GUI
     	panel.remove(createLogEntry);
-        scrollPane.setVisible(false);
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
         revalidate();
         repaint();
 	}
 
 	//Log entries window
     protected void viewLogEntries() {
-    	try{
-    		//Compile entries
-    		EntryList entryList = new EntryList();
-    		//Build panel of entries
-	    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
-	    	//Create text scroll pane
-	        scrollPane = new JScrollPane (entryPanel);
-	    	this.add(scrollPane,BorderLayout.CENTER);
-	    	validate();
-	    	repaint();
-    	} catch (IOException | FileFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error During File Read", "Error During File Read", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+		//Build panel of entries
+    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
+    	//Create text scroll pane
+        scrollPane = new JScrollPane (entryPanel);
+    	this.add(scrollPane,BorderLayout.CENTER);
+    	validate();
+    	repaint();
 	}
 
 	/**
      * Brings up the Change Password menu
      * @param listClass
-     * @param current 
+     * @param user 
      */
-    protected void changePassword(UserList listClass, User current){
+    protected void changePassword(UserList listClass, User user){
         // Remove main menu options/add password change boxes
         panel.removeAll();
         password.setText("");
@@ -250,7 +282,8 @@ public class LOG extends JFrame{
      */
     protected void accountManage(){
         panel.removeAll();
-        scrollPane.setVisible(false);
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
         panel.add(addUser);
         panel.add(viewUsers);
         panel.add(editUser);
@@ -284,7 +317,7 @@ public class LOG extends JFrame{
                 accountManage();
             }
         });
-        User userObjct = current;
+        userObjct = current;
         panel.removeAll();
         panel.add(user);
         username.setText("");
@@ -297,12 +330,12 @@ public class LOG extends JFrame{
     }
     
     // Edit user method
-    protected void editUser(String username){
-        User userObjct = userList.getUser(username);
+    protected void editUser(final String username){
+        userObjct = userList.getUser(username);
         JButton delete = new JButton("Delete User");
         JButton update = new JButton("Update Status");
         JButton chngPswd = new JButton("Change Password");
-        Checkbox isAdmin = new Checkbox("Admin");
+        isAdmin = new Checkbox("Admin");
         isAdmin.setState(userObjct.userStatus());
         
         // Delete user listener
@@ -325,7 +358,6 @@ public class LOG extends JFrame{
         chngPswd.addActionListener(new ActionListener(){
             public void actionPerformed (ActionEvent e){
                 changePassword(userList, userObjct);
-                accountManage();
             }
         });
         
@@ -347,6 +379,7 @@ public class LOG extends JFrame{
     protected void addUser(){
         JButton submit = new JButton("Submit");
         panel.removeAll();
+        panel.add(mainMenu);
         panel.add(user);
         username.setText("");
         panel.add(username);
@@ -354,7 +387,7 @@ public class LOG extends JFrame{
         password.setText("");
         panel.add(password);
         //JTextField uName = new JTextField(20);
-        Checkbox isAdmin = new Checkbox("Admin");
+        isAdmin = new Checkbox("Admin");
         panel.add(new JLabel("Admin"));
         panel.add(isAdmin);
         panel.add(submit);
@@ -389,6 +422,7 @@ public class LOG extends JFrame{
         // Add additional option for admin
         if(current.userStatus()){
             panel.add(accountManagement);
+            panel.add(deleteAllEntries);
         }
         panel.add(logoutButton);
         revalidate();

@@ -1,17 +1,19 @@
 package log;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -141,9 +143,17 @@ public class EntryList {
         
     }
     
-    
-    public void deleteAllLogEntries(){//TODO
-        
+    //Clears Logs.txt file
+    public void deleteAllLogEntries(){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("Logs.txt");
+        	writer.print("");
+        	writer.close();
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "File Not Found!", "File Not Found", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
     }
     
     
