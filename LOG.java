@@ -54,8 +54,15 @@ public class LOG extends JFrame{
     JButton mainMenu = new JButton("Main Menu");
     JButton viewUsers = new JButton("View Users");
     JButton editUser = new JButton("Edit User");
+    JButton findUser = new JButton("Search");
+    JButton cancel = new JButton("Cancel");
+    JButton delete = new JButton("Delete User");
+    JButton update = new JButton("Update Status");
+    JButton chngPswd = new JButton("Change Password");
+    JButton submit = new JButton("Submit");
     UserList userList;
     EntryList entryList;
+    String editName;
     
     /**
      * This creates the GUI and userList which is loaded from Users.txt
@@ -130,6 +137,7 @@ public class LOG extends JFrame{
                 		scrollPane.removeAll();
                     login = false;
                     panel.removeAll();
+                    panelBottom.removeAll();
                     username.setText("");
                     passwordHidden.setText("");
                     panel.add(user);
@@ -166,6 +174,14 @@ public class LOG extends JFrame{
                     } catch (PasswordChangeException ex) {
                         JOptionPane.showMessageDialog(frame, ex.message, ex.title, WIDTH);
                     }
+                }
+            });
+            
+            // Call log entry creation function
+            saveEntry.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    entryList.createLogEntry(current.getName(),textArea.getText());
+                    mainMenu();
                 }
             });
             
@@ -217,6 +233,64 @@ public class LOG extends JFrame{
                     findUser();
                 }
             });
+            
+            findUser.addActionListener(new ActionListener(){ //MOVE
+                @Override
+                public void actionPerformed (ActionEvent e){
+                    if(userList.getUser(username.getText()) == null){
+                       JOptionPane.showMessageDialog(frame, "User not found.");
+                    }
+                    else if(username.getText().equalsIgnoreCase(current.getName())){
+                        JOptionPane.showMessageDialog(frame, "Cannot edit own account.");
+                    }
+                    else{
+                        editUser(username.getText());
+                    }
+                }
+            });
+        
+            cancel.addActionListener(new ActionListener(){ //MOVE
+                @Override
+                public void actionPerformed (ActionEvent e){
+                    accountManage();
+                }
+            });
+            
+            // Delete user listener
+            delete.addActionListener(new ActionListener(){ //MOVE
+                public void actionPerformed (ActionEvent e){
+                    userList.deleteUser(editName);
+                    accountManage();
+                }
+            });
+        
+            // Status change listener
+            update.addActionListener(new ActionListener(){ //MOVE
+                public void actionPerformed (ActionEvent e){
+                    userList.setStatus(editName, isAdmin.getState());
+                    accountManage();
+                }
+            });
+        
+            // Password change listener
+            chngPswd.addActionListener(new ActionListener(){ //MOVE
+                public void actionPerformed (ActionEvent e){
+                    changePassword(userList, userObjct);
+                }
+            });
+            
+            // Submit button listener
+            submit.addActionListener(new ActionListener(){ //MOVE
+                public void actionPerformed (ActionEvent e){
+                    try {
+                        userList.addUser(username.getText(), password.getText(), isAdmin.getState());
+                        accountManage();
+                    } catch (DuplicateUserException ex) {
+                        JOptionPane.showMessageDialog(frame, ex.message, "Username is taken", WIDTH);
+                    }
+                
+                }
+            });
 	        
 	      //Catch file read error
     	} catch (IOException | FileFormatException e) {
@@ -261,13 +335,6 @@ public class LOG extends JFrame{
         revalidate();
         repaint();
         
-     // Call edit user function
-        saveEntry.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                entryList.createLogEntry(current.getName(),textArea.getText());
-                mainMenu();
-            }
-        });
 	}
 
 	//Log entries window
@@ -328,28 +395,7 @@ public class LOG extends JFrame{
     
     // Find user method
     protected void findUser(){
-        JButton findUser = new JButton("Search");
-        findUser.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed (ActionEvent e){
-                if(userList.getUser(username.getText()) == null){
-                    JOptionPane.showMessageDialog(frame, "User not found.");
-                }
-                else if(username.getText().equalsIgnoreCase(current.getName())){
-                    JOptionPane.showMessageDialog(frame, "Cannot edit own account.");
-                }
-                else{
-                    editUser(username.getText());
-                }
-            }
-        });
-        JButton cancel = new JButton("Cancel");
-        cancel.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed (ActionEvent e){
-                accountManage();
-            }
-        });
+        
         userObjct = current;
         panel.removeAll();
         panel.add(user);
@@ -363,39 +409,15 @@ public class LOG extends JFrame{
     }
     
     // Edit user method
-    protected void editUser(final String username){
-        userObjct = userList.getUser(username);
-        JButton delete = new JButton("Delete User");
-        JButton update = new JButton("Update Status");
-        JButton chngPswd = new JButton("Change Password");
+    protected void editUser(final String editUsername){
+        userObjct = userList.getUser(editUsername);
+        editName = new String(editUsername);
+        
         isAdmin = new Checkbox("Admin");
         isAdmin.setState(userObjct.userStatus());
         
-        // Delete user listener
-        delete.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                userList.deleteUser(username);
-                accountManage();
-            }
-        });
-        
-        // Status change listener
-        update.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                userList.setStatus(username, isAdmin.getState());
-                accountManage();
-            }
-        });
-        
-        // Password change listener
-        chngPswd.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                changePassword(userList, userObjct);
-            }
-        });
-        
         panel.removeAll();
-        panel.add(new JLabel(username));
+        panel.add(new JLabel(editUsername));
         panel.add(isAdmin);
         panel.add(delete);
         panel.add(update);
@@ -403,14 +425,13 @@ public class LOG extends JFrame{
         panel.revalidate();
         panel.repaint();
         
-        
     }
     
     /**
      * Adds user
      */
     protected void addUser(){
-        JButton submit = new JButton("Submit");
+        
         panel.removeAll();
         panel.add(mainMenu);
         panel.add(user);
@@ -425,18 +446,7 @@ public class LOG extends JFrame{
         panel.add(isAdmin);
         panel.add(submit);
         
-        // Submit button listener
-        submit.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                try {
-                    userList.addUser(username.getText(), password.getText(), isAdmin.getState());
-                    accountManage();
-                } catch (DuplicateUserException ex) {
-                    JOptionPane.showMessageDialog(frame, ex.message, "Username is taken", WIDTH);
-                }
-                
-            }
-        });
+        
         panel.revalidate();
         panel.repaint();
     }
