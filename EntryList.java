@@ -1,17 +1,21 @@
 package log;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -25,6 +29,7 @@ public class EntryList {
     List<Entry> logbase = new ArrayList<Entry>();
     JPanel panel = new JPanel();
     Entry entry;
+    Date today = new Date();
     
     public EntryList() throws IOException, FileFormatException{ //LOG BASE HAS BEEN BUILT BUT MUST BE TESTED THOROUGHLY!
         
@@ -121,9 +126,19 @@ public class EntryList {
     	return panel;
     }
     
-    
-    public void createLogEntry(){//TODO
-        
+    // Add log entry to Logs.txt
+    public void createLogEntry(String userName, String text){
+    	Entry entry = new Entry(userName, text, today);
+    	logbase.add(entry);
+        try {
+            updateLogFile();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(null, "Successfully added entry", 
+                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
     }
     
     
@@ -141,14 +156,34 @@ public class EntryList {
         
     }
     
-    
-    public void deleteAllLogEntries(){//TODO
-        
+    //Clears Logs.txt file
+    public void deleteAllLogEntries(){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("Logs.txt");
+        	writer.print("");
+        	writer.close();
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "File Not Found!", "File Not Found", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
     }
     
-    
-    public void updateLogFile(){//TODO
-        
+    //Updates log file
+    public void updateLogFile()throws IOException{
+    	FileWriter writer = new FileWriter("Logs.txt", false);
+        try (BufferedWriter bw = new BufferedWriter(writer)) {
+            bw.write(this.toString());
+        }
     }
     
+    //All entries to string
+    public String toString(){
+        String output = "";
+        for(Entry e: logbase){
+            output += e.toString() + "\n";
+            output += "\n";
+        }
+        return output;
+    }
 }
