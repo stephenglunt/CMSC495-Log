@@ -1,11 +1,11 @@
 package log;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Checkbox;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.awt.Checkbox;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,7 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -26,37 +28,47 @@ public class LOG extends JFrame{
     private static final long serialVersionUID = 1L;
     boolean login = false;
     User current = null;
+    User userObjct = null;
     JFrame frame;
-    JScrollPane scrollPane;
-    JPanel panel = new JPanel();
+    JTextArea textArea;
+    JScrollPane scrollPane = null;
+    Checkbox isAdmin;
+    JPanel panelTop = new JPanel();
+    JPanel panelBottom = new JPanel();
     JButton loginButton = new JButton ("Login");
     JLabel user = new JLabel("Username");
     JTextField username = new JTextField (15);
     JLabel pass = new JLabel("Password");
+    JPasswordField passwordHidden = new JPasswordField (15);
     JTextField password = new JTextField (15);
     JLabel passConfirm = new JLabel("Confirm Password");
     JTextField passwordConfirm = new JTextField (15);
     JButton logoutButton = new JButton ("Logout");
     JButton viewLogEntries = new JButton ("View Log Entries");
     JButton createLogEntry = new JButton ("Create Log Entry");
+    JButton deleteAllEntries = new JButton ("Delete All Log Entries");
     JButton accountManagement = new JButton ("Account Management");
     JButton savePassword = new JButton ("Save Password");
+    JButton saveEntry = new JButton ("Save Entry");
     JButton addUser = new JButton ("Add User");//
     JButton mainMenu = new JButton("Main Menu");
     JButton viewUsers = new JButton("View Users");
     JButton editUser = new JButton("Edit User");
     UserList userList;
+    EntryList entryList;
     
     /**
      * This creates the GUI and userList which is loaded from Users.txt
      */
     public LOG() {
     	try {
-            // Compile userbase
+            // Compile userbase & entrybase
             userList = new UserList();
+            entryList = new EntryList();
             
             // Add fields/buttons to GUI
-            panel.setBorder(BorderFactory.createRaisedBevelBorder());
+            panelTop.setBorder(BorderFactory.createRaisedBevelBorder());
+            panelBottom.setBorder(BorderFactory.createRaisedBevelBorder());
             loginButton.setBorder(BorderFactory.createRaisedBevelBorder());
             logoutButton.setBorder(BorderFactory.createRaisedBevelBorder());
             viewLogEntries.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -67,12 +79,16 @@ public class LOG extends JFrame{
             mainMenu.setBorder(BorderFactory.createRaisedBevelBorder());
             viewUsers.setBorder(BorderFactory.createRaisedBevelBorder());
             editUser.setBorder(BorderFactory.createRaisedBevelBorder());
-            panel.add(user);
-            panel.add (username);
-            panel.add(pass);
-            panel.add (password);
-            panel.add (loginButton);
-            this.add(panel, BorderLayout.PAGE_START);
+            deleteAllEntries.setBorder(BorderFactory.createRaisedBevelBorder());
+            saveEntry.setBorder(BorderFactory.createRaisedBevelBorder());
+            saveEntry.setBackground(Color.GREEN);
+            panelTop.add(user);
+            panelTop.add (username);
+            panelTop.add(pass);
+            panelTop.add (passwordHidden);
+            panelTop.add (loginButton);
+            this.add(panelTop, BorderLayout.PAGE_START);
+            this.add(panelBottom, BorderLayout.PAGE_END);
 	        
             //Create GUI
             setTitle ("LOG");
@@ -87,7 +103,8 @@ public class LOG extends JFrame{
 	    loginButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
                 // Check if login is valid
-                if(userList.checkUserCredentials(username.getText(), password.getText())){
+                String password = new String(passwordHidden.getPassword());
+                if(userList.checkUserCredentials(username.getText(), password)){
                     current = userList.getUser(username.getText());
                     login = true;
                     mainMenu();
@@ -109,16 +126,17 @@ public class LOG extends JFrame{
 	    // Listener for logout
             logoutButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
-                	scrollPane.removeAll();
+                	if(scrollPane != null)
+                		scrollPane.removeAll();
                     login = false;
-                    panel.removeAll();
+                    panelTop.removeAll();
                     username.setText("");
-                    password.setText("");
-                    panel.add(user);
-                    panel.add (username);
-                    panel.add(pass);
-                    panel.add (password);
-                    panel.add (loginButton);
+                    passwordHidden.setText("");
+                    panelTop.add(user);
+                    panelTop.add (username);
+                    panelTop.add(pass);
+                    panelTop.add (passwordHidden);
+                    panelTop.add (loginButton);
                     revalidate();
                     repaint();
                 }
@@ -134,8 +152,11 @@ public class LOG extends JFrame{
                             throw new PasswordChangeException("Invalid Password", "Passwords cannot contain spaces.");
                         if(password.getText().length()==0)
                             throw new PasswordChangeException("No Password", "No password entered.");
-                        
-                        userList.changePassword(current, passwordConfirm.getText());
+                        if(userObjct != null){
+                        	userList.changePassword(userObjct, passwordConfirm.getText());
+                        }else{
+                        	userList.changePassword(current, passwordConfirm.getText());
+                        }
                         JOptionPane.showMessageDialog(frame, "Password change complete!",
                                 "Accepted Password",JOptionPane.WARNING_MESSAGE);
                         
@@ -169,6 +190,13 @@ public class LOG extends JFrame{
                 }
             });
             
+            // Call delete all log page
+            deleteAllEntries.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    deleteAllLogEntries();
+                }
+            });
+            
             // Call main menu page
             mainMenu.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
@@ -197,49 +225,85 @@ public class LOG extends JFrame{
         }
     }
     
-    //Log creation window
-    protected void createLogEntry() {
-    	panel.remove(createLogEntry);
-        scrollPane.setVisible(false);
+    //Delete all log entry window
+    protected void deleteAllLogEntries() {
+    	//Update GUI
+		panelTop.remove(deleteAllEntries);
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
+    	String[] options = new String[] {"Yes", "No"};
+        int selection = JOptionPane.showOptionDialog(null, "This CANNOT be undone. Are you sure?", "Delete All Log Entries",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[0]);
         revalidate();
         repaint();
+       if(selection == 0){
+    	   entryList.deleteAllLogEntries();
+    	   mainMenu();
+       }
+       else{
+    	   mainMenu();
+       }
+	}
+
+	//Log creation window
+    protected void createLogEntry() {
+    	//Update GUI
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
+    	textArea = new JTextArea(5, 20);
+    	scrollPane = new JScrollPane(textArea);
+    	scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+    	panelBottom.add(saveEntry,BorderLayout.PAGE_END);
+        revalidate();
+        repaint();
+        
+     // Call edit user function
+        saveEntry.addActionListener(new ActionListener(){
+            public void actionPerformed (ActionEvent e){
+                entryList.createLogEntry(current.getName(),textArea.getText());
+                mainMenu();
+            }
+        });
 	}
 
 	//Log entries window
     protected void viewLogEntries() {
-    	try{
-    		//Compile entries
-    		EntryList entryList = new EntryList();
-    		//Build panel of entries
-	    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
-	    	//Create text scroll pane
-	        scrollPane = new JScrollPane (entryPanel);
-	    	this.add(scrollPane,BorderLayout.CENTER);
-	    	validate();
-	    	repaint();
-    	} catch (IOException | FileFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error During File Read", "Error During File Read", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
+    	panelBottom.removeAll();
+		//Build panel of entries
+    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
+    	//Create text scroll pane
+        scrollPane = new JScrollPane (entryPanel);
+        scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+    	validate();
+    	repaint();
 	}
 
 	/**
      * Brings up the Change Password menu
      * @param listClass
-     * @param current 
+     * @param user 
      */
-    protected void changePassword(UserList listClass, User current){
+    protected void changePassword(UserList listClass, User user){
         // Remove main menu options/add password change boxes
-        panel.removeAll();
+        panelTop.removeAll();
         password.setText("");
         passwordConfirm.setText("");
-        panel.add(pass);
-        panel.add(password);
-        panel.add(passConfirm);
-        panel.add(passwordConfirm);
-        panel.add(savePassword);
-        panel.revalidate();
-        panel.repaint();
+        panelTop.add(pass);
+        panelTop.add(password);
+        panelTop.add(passConfirm);
+        panelTop.add(passwordConfirm);
+        panelTop.add(savePassword);
+        panelTop.revalidate();
+        panelTop.repaint();
 
         //DO NOT CHANGE PASSWORD IMMEDIATELY WHEN CALLING THIS METHOD. Must call and check for password change through button press
 
@@ -249,12 +313,14 @@ public class LOG extends JFrame{
      * Launches the Account Management interface - still needs work.
      */
     protected void accountManage(){
-        panel.removeAll();
-        scrollPane.setVisible(false);
-        panel.add(addUser);
-        panel.add(viewUsers);
-        panel.add(editUser);
-        panel.add(mainMenu);
+    	panelBottom.removeAll();
+        panelTop.removeAll();
+    	if(scrollPane != null)
+    		scrollPane.removeAll();
+        panelTop.add(addUser);
+        panelTop.add(viewUsers);
+        panelTop.add(editUser);
+        panelTop.add(mainMenu);
         revalidate();
         repaint();
         
@@ -284,25 +350,25 @@ public class LOG extends JFrame{
                 accountManage();
             }
         });
-        User userObjct = current;
-        panel.removeAll();
-        panel.add(user);
+        userObjct = current;
+        panelTop.removeAll();
+        panelTop.add(user);
         username.setText("");
-        panel.add(username);
-        panel.add(findUser);
-        panel.add(cancel);
-        panel.revalidate();
-        panel.repaint();
+        panelTop.add(username);
+        panelTop.add(findUser);
+        panelTop.add(cancel);
+        panelTop.revalidate();
+        panelTop.repaint();
         
     }
     
     // Edit user method
-    protected void editUser(String username){
-        User userObjct = userList.getUser(username);
+    protected void editUser(final String username){
+        userObjct = userList.getUser(username);
         JButton delete = new JButton("Delete User");
         JButton update = new JButton("Update Status");
         JButton chngPswd = new JButton("Change Password");
-        Checkbox isAdmin = new Checkbox("Admin");
+        isAdmin = new Checkbox("Admin");
         isAdmin.setState(userObjct.userStatus());
         
         // Delete user listener
@@ -325,18 +391,17 @@ public class LOG extends JFrame{
         chngPswd.addActionListener(new ActionListener(){
             public void actionPerformed (ActionEvent e){
                 changePassword(userList, userObjct);
-                accountManage();
             }
         });
         
-        panel.removeAll();
-        panel.add(new JLabel(username));
-        panel.add(isAdmin);
-        panel.add(delete);
-        panel.add(update);
-        panel.add(chngPswd);
-        panel.revalidate();
-        panel.repaint();
+        panelTop.removeAll();
+        panelTop.add(new JLabel(username));
+        panelTop.add(isAdmin);
+        panelTop.add(delete);
+        panelTop.add(update);
+        panelTop.add(chngPswd);
+        panelTop.revalidate();
+        panelTop.repaint();
         
         
     }
@@ -346,18 +411,19 @@ public class LOG extends JFrame{
      */
     protected void addUser(){
         JButton submit = new JButton("Submit");
-        panel.removeAll();
-        panel.add(user);
+        panelTop.removeAll();
+        panelTop.add(mainMenu);
+        panelTop.add(user);
         username.setText("");
-        panel.add(username);
-        panel.add(pass);
+        panelTop.add(username);
+        panelTop.add(pass);
         password.setText("");
-        panel.add(password);
+        panelTop.add(password);
         //JTextField uName = new JTextField(20);
-        Checkbox isAdmin = new Checkbox("Admin");
-        panel.add(new JLabel("Admin"));
-        panel.add(isAdmin);
-        panel.add(submit);
+        isAdmin = new Checkbox("Admin");
+        panelTop.add(new JLabel("Admin"));
+        panelTop.add(isAdmin);
+        panelTop.add(submit);
         
         // Submit button listener
         submit.addActionListener(new ActionListener(){
@@ -371,26 +437,31 @@ public class LOG extends JFrame{
                 
             }
         });
-        panel.revalidate();
-        panel.repaint();
+        panelTop.revalidate();
+        panelTop.repaint();
     }
 
     // Main menu method
     protected void mainMenu(){
-    	if(scrollPane != null)
+    	//Clear screen
+    	panelBottom.removeAll();
+    	if(scrollPane != null){
     		scrollPane.removeAll();
-        // Remove login buttons
-        panel.removeAll();
+    		this.remove(scrollPane);
+    	}
+        panelTop.removeAll();
+        
         System.out.println("Welcome, " + current.getName() + "!"); //CURRENTLY JUST TESTING, should probably print elsewhere
         System.out.println("Admin? " + current.userStatus());
         // Switch to main menu
-        panel.add(viewLogEntries);
-        panel.add(createLogEntry);
+        panelTop.add(viewLogEntries);
+        panelTop.add(createLogEntry);
         // Add additional option for admin
         if(current.userStatus()){
-            panel.add(accountManagement);
+            panelTop.add(accountManagement);
+            panelTop.add(deleteAllEntries);
         }
-        panel.add(logoutButton);
+        panelTop.add(logoutButton);
         revalidate();
         repaint();
     }

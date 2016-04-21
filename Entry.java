@@ -1,6 +1,5 @@
 package log;
 
-import java.awt.Dimension;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
