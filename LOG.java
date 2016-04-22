@@ -234,6 +234,13 @@ public class LOG extends JFrame{
                 }
             });
             
+            // Call view users function
+            viewUsers.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    viewUsers();
+                }
+            });
+            
          // Call edit user function
             editUser.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
@@ -306,7 +313,23 @@ public class LOG extends JFrame{
         }
     }
     
-    //Delete all log entry window
+    //Display list of users and status
+    protected void viewUsers() {
+		panel.remove(viewUsers);
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
+    	textArea = new JTextArea(5, 20);
+    	textArea.setText(userList.viewUsers());
+    	scrollPane = new JScrollPane(textArea);
+    	scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+    	revalidate();
+        repaint();
+	}
+
+	//Delete all log entry window
     protected void deleteAllLogEntries() {
     	//Update GUI
 		panel.remove(deleteAllEntries);
@@ -389,8 +412,10 @@ public class LOG extends JFrame{
     protected void accountManage(){
     	panelBottom.removeAll();
         panel.removeAll();
-    	if(scrollPane != null)
+    	if(scrollPane != null){
     		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
         panel.add(addUser);
         panel.add(viewUsers);
         panel.add(editUser);
@@ -402,7 +427,7 @@ public class LOG extends JFrame{
     
     // Find user method
     protected void findUser(){
-        
+    	viewUsers();
         userObjct = current;
         panel.removeAll();
         panel.add(user);
@@ -417,6 +442,10 @@ public class LOG extends JFrame{
     
     // Edit user method
     protected void editUser(final String editUsername){
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
         userObjct = userList.getUser(editUsername);
         editName = new String(editUsername);
         
@@ -429,8 +458,8 @@ public class LOG extends JFrame{
         panel.add(delete);
         panel.add(update);
         panel.add(chngPswd);
-        panel.revalidate();
-        panel.repaint();
+        revalidate();
+        repaint();
         
     }
     
@@ -438,7 +467,10 @@ public class LOG extends JFrame{
      * Adds user
      */
     protected void addUser(){
-        
+    	if(scrollPane != null){
+    		scrollPane.removeAll();
+    		this.remove(scrollPane);
+    	}
         panel.removeAll();
         panel.add(mainMenu);
         panel.add(user);
@@ -454,8 +486,8 @@ public class LOG extends JFrame{
         panel.add(submit);
         
         
-        panel.revalidate();
-        panel.repaint();
+        revalidate();
+        repaint();
     }
 
     // Main menu method

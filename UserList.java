@@ -1,4 +1,4 @@
-package Log;
+package log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -188,6 +188,17 @@ public class UserList {
         try (BufferedWriter bw = new BufferedWriter(writer)) {
             bw.write(this.toString());
         }
+    }
+    
+    //Returns user names and status for viewing
+    public String viewUsers(){
+        String output = "";
+        for(User u: userbase){
+            output += "Username: " + u.getName() + "   Admin? " + u.userStatus();
+            output += "\n";
+            output += "\n";
+        }
+        return output;
     }
     
     /**
