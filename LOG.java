@@ -87,6 +87,7 @@ public class LOG extends JFrame{
             viewUsers.setBorder(BorderFactory.createRaisedBevelBorder());
             editUser.setBorder(BorderFactory.createRaisedBevelBorder());
             deleteAllEntries.setBorder(BorderFactory.createRaisedBevelBorder());
+            submit.setBorder(BorderFactory.createRaisedBevelBorder());
             saveEntry.setBorder(BorderFactory.createRaisedBevelBorder());
             saveEntry.setBackground(Color.GREEN);
             panel.add(user);
@@ -180,8 +181,14 @@ public class LOG extends JFrame{
             // Call log entry creation function
             saveEntry.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
-                    entryList.createLogEntry(current.getName(),textArea.getText());
-                    mainMenu();
+                	String data = textArea.getText().trim();
+                	  if(!data.equals("")){
+                          entryList.createLogEntry(current.getName(),data);
+                          mainMenu();
+                	  }else{
+                		  JOptionPane.showMessageDialog(frame, "Entry text cannot be blank!",
+                				  "Blank Log Entry",JOptionPane.WARNING_MESSAGE);
+                	  }
                 }
             });
             
