@@ -1,12 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * CMSC 495
  */
 package Log;
 
 /**
- *
+ * Exception thrown when the file that is being read is in the wrong format.
  * @author Stephen
  */
 class FileFormatException extends Exception {
