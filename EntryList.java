@@ -31,6 +31,11 @@ public class EntryList {
     Entry entry;
     Date today = new Date();
     
+    /**
+     * Constructor
+     * @throws IOException
+     * @throws FileFormatException 
+     */
     public EntryList() throws IOException, FileFormatException{ //LOG BASE HAS BEEN BUILT BUT MUST BE TESTED THOROUGHLY!
         
         FileReader fr = new FileReader("Logs.txt");
@@ -83,25 +88,33 @@ public class EntryList {
         br.close();
     }
     
-    // Builds panel of entries with associated buttons
+    
+    /**
+     * Builds panel of entries with associated buttons
+     * @param admin
+     * @return 
+     */
     public JPanel displayEntries(Boolean admin){
     	for(int i = 0; i < logbase.size();i++){
     		entry = logbase.get(i);
     		//Add listeners to each button
     		//View entry listener
     		entry.view.addActionListener(new ActionListener(){
+                @Override
                 public void actionPerformed (ActionEvent e){
                     viewLogEntry(entry);
                 }
             });
     		//Edit listener
     		entry.edit.addActionListener(new ActionListener(){
+                @Override
                 public void actionPerformed (ActionEvent e){
                     viewLogEntry(entry);
                 }
             });
     		//Delete listener
        		entry.delete.addActionListener(new ActionListener(){
+                @Override
                 public void actionPerformed (ActionEvent e){
                     viewLogEntry(entry);
                 }
@@ -126,7 +139,12 @@ public class EntryList {
     	return panel;
     }
     
-    // Add log entry to Logs.txt
+    
+    /**
+     * Add log entry to Logs.txt
+     * @param userName
+     * @param text 
+     */
     public void createLogEntry(String userName, String text){
     	Entry entry = new Entry(userName, text, today);
     	logbase.add(entry);
@@ -156,7 +174,10 @@ public class EntryList {
         
     }
     
-    //Clears Logs.txt file
+    
+    /**
+     * Clears Logs.txt file
+     */
     public void deleteAllLogEntries(){
 		PrintWriter writer;
 		try {
@@ -169,7 +190,11 @@ public class EntryList {
 		}
     }
     
-    //Updates log file
+    
+    /**
+     * Updates log file
+     * @throws IOException 
+     */
     public void updateLogFile()throws IOException{
     	FileWriter writer = new FileWriter("Logs.txt", false);
         try (BufferedWriter bw = new BufferedWriter(writer)) {
@@ -177,7 +202,12 @@ public class EntryList {
         }
     }
     
-    //All entries to string
+    
+    /**
+     * All entries to string formated for saving to file.
+     * @return 
+     */
+    @Override
     public String toString(){
         String output = "";
         for(Entry e: logbase){
