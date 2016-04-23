@@ -106,8 +106,10 @@ public class LOG extends JFrame{
             setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
             validate();
 	    
-            //Add listeners to buttons
-            //Login listener
+            /**
+             * Add listeners to buttons
+             * Login listener
+             */
 	    loginButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
                 // Check if login is valid
@@ -131,7 +133,10 @@ public class LOG extends JFrame{
                 }
              });
 	        
-	    // Listener for logout
+	    
+            /**
+             * Listener for logout
+             */
             logoutButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
                 	if(scrollPane != null)
@@ -313,7 +318,10 @@ public class LOG extends JFrame{
         }
     }
     
-    //Display list of users and status
+    
+    /**
+     * Display list of users and status
+     */
     protected void viewUsers() {
 		panel.remove(viewUsers);
     	if(scrollPane != null){
@@ -327,12 +335,15 @@ public class LOG extends JFrame{
     	this.add(scrollPane,BorderLayout.CENTER);
     	revalidate();
         repaint();
-	}
+    }
 
-	//Delete all log entry window
+	
+    /**
+     * Delete all log entry window
+     */
     protected void deleteAllLogEntries() {
     	//Update GUI
-		panel.remove(deleteAllEntries);
+        panel.remove(deleteAllEntries);
     	if(scrollPane != null)
     		scrollPane.removeAll();
     	String[] options = new String[] {"Yes", "No"};
@@ -341,21 +352,24 @@ public class LOG extends JFrame{
             null, options, options[0]);
         revalidate();
         repaint();
-       if(selection == 0){
+        if(selection == 0){
     	   entryList.deleteAllLogEntries();
     	   mainMenu();
-       }
-       else{
+        }
+        else{
     	   mainMenu();
-       }
-	}
+        }
+    }
 
-	//Log creation window
+	
+    /**
+     * Log creation window
+     */
     protected void createLogEntry() {
     	//Update GUI
     	if(scrollPane != null){
-    		scrollPane.removeAll();
-    		this.remove(scrollPane);
+            scrollPane.removeAll();
+            this.remove(scrollPane);
     	}
     	textArea = new JTextArea(5, 20);
     	scrollPane = new JScrollPane(textArea);
@@ -364,17 +378,19 @@ public class LOG extends JFrame{
     	panelBottom.add(saveEntry,BorderLayout.PAGE_END);
         revalidate();
         repaint();
-        
-	}
+    }
 
-	//Log entries window
+	
+    /**
+     * Log entries window
+     */
     protected void viewLogEntries() {
     	if(scrollPane != null){
-    		scrollPane.removeAll();
-    		this.remove(scrollPane);
+            scrollPane.removeAll();
+            this.remove(scrollPane);
     	}
     	panelBottom.removeAll();
-		//Build panel of entries
+        //Build panel of entries
     	JPanel entryPanel = entryList.displayEntries(current.userStatus());
     	//Create text scroll pane
         scrollPane = new JScrollPane (entryPanel);
@@ -382,9 +398,9 @@ public class LOG extends JFrame{
     	this.add(scrollPane,BorderLayout.CENTER);
     	validate();
     	repaint();
-	}
+    }
 
-	/**
+    /**
      * Brings up the Change Password menu
      * @param listClass
      * @param user 
@@ -403,7 +419,6 @@ public class LOG extends JFrame{
         panel.repaint();
 
         //DO NOT CHANGE PASSWORD IMMEDIATELY WHEN CALLING THIS METHOD. Must call and check for password change through button press
-
     }
     
     /**
@@ -422,10 +437,12 @@ public class LOG extends JFrame{
         panel.add(mainMenu);
         revalidate();
         repaint();
-        
     }
     
-    // Find user method
+    
+    /**
+     * Find user method
+     */
     protected void findUser(){
     	viewUsers();
         userObjct = current;
@@ -437,14 +454,17 @@ public class LOG extends JFrame{
         panel.add(cancel);
         panel.revalidate();
         panel.repaint();
-        
     }
     
-    // Edit user method
+    
+    /**
+     * Edit user method
+     * @param editUsername 
+     */
     protected void editUser(final String editUsername){
     	if(scrollPane != null){
-    		scrollPane.removeAll();
-    		this.remove(scrollPane);
+            scrollPane.removeAll();
+            this.remove(scrollPane);
     	}
         userObjct = userList.getUser(editUsername);
         editName = new String(editUsername);
@@ -460,7 +480,6 @@ public class LOG extends JFrame{
         panel.add(chngPswd);
         revalidate();
         repaint();
-        
     }
     
     /**
@@ -468,8 +487,8 @@ public class LOG extends JFrame{
      */
     protected void addUser(){
     	if(scrollPane != null){
-    		scrollPane.removeAll();
-    		this.remove(scrollPane);
+            scrollPane.removeAll();
+            this.remove(scrollPane);
     	}
         panel.removeAll();
         panel.add(mainMenu);
@@ -485,18 +504,20 @@ public class LOG extends JFrame{
         panel.add(isAdmin);
         panel.add(submit);
         
-        
         revalidate();
         repaint();
     }
 
-    // Main menu method
+    
+    /**
+     * Main menu method
+     */
     protected void mainMenu(){
     	//Clear screen
     	panelBottom.removeAll();
     	if(scrollPane != null){
-    		scrollPane.removeAll();
-    		this.remove(scrollPane);
+            scrollPane.removeAll();
+            this.remove(scrollPane);
     	}
         panel.removeAll();
         
@@ -515,7 +536,12 @@ public class LOG extends JFrame{
         repaint();
     }
 
-	// Main method
+    
+    /**
+     * Main method
+     * @param args
+     * @throws IOException 
+     */
     public static void main(String[] args) throws IOException{
         LOG run = new LOG();
     }
