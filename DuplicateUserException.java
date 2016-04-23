@@ -1,17 +1,20 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * CMSC495
  */
 package Log;
 
 /**
- *
+ * This is an exception thrown when a new account is attempted to be created
+ * with an already taken user name.
  * @author Stephen
  */
 class DuplicateUserException extends Exception {
     public String message;
-
+    
+    /**
+     * Constructor 
+     * @param username 
+     */
     public DuplicateUserException(String username) {
         message = "User name: " + username + " is already taken.";
     }
