@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
-//import java.util.Calendar; NOT NEEDED?
 
 /**
  *
@@ -16,7 +15,7 @@ public class Entry {
     
     private final String user;
     private String text;
-    private Date creationTime;
+    private final Date creationTime;
     //private Calendar cal; NOT NEEDED?
     JButton view,edit,delete;
     JTextArea entryText;
@@ -49,7 +48,7 @@ public class Entry {
      */
     @Override
     public String toString(){ //MUST TEST FOR RETURNING PROPER STRING (for file)
-        return (user+" "+creationTime.getTime()+"\n"+text);//MUST RETURN PROPER STRING
+        return (user+"/;e;/"+creationTime.getTime()+"/;e;/"+text);//MUST RETURN PROPER STRING
     }
     
     /**
