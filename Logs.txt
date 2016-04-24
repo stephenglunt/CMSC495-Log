@@ -1,0 +1,24 @@
+Stephen/;e;/1461457272002/;e;/We should use InputStreamReader and specify UTF-8 as the charsetName.
+
+private static void readFile1(File fin) throws IOException {
+	FileInputStream fis = new FileInputStream(fin);
+ 
+	//Construct BufferedReader from InputStreamReader
+	BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+ 
+	String line = null;
+	while ((line = br.readLine()) != null) {
+		System.out.println(line);
+	}
+ 
+	br.close();
+}/;E/;
+Stephen/;e;/1461457272002/;e;/One more thing.  You need to delete your old log.
+It won't work with this.
+This one will work better.
+If you make a new log, you need it to be empty and saved with UTF-8 encoding./;E/;
+sam/;e;/1461457407554/;e;/Edit and Delete Log Entry buttons are visible with basic users.
+
+This is not good.
+
+Also, these buttons are stupidly large./;E/;
