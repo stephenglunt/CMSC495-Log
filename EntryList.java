@@ -3,13 +3,16 @@ package log;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,54 +41,36 @@ public class EntryList {
      */
     public EntryList() throws IOException, FileFormatException{ //LOG BASE HAS BEEN BUILT BUT MUST BE TESTED THOROUGHLY!
         
-        FileReader fr = new FileReader("Logs.txt");
-        BufferedReader br = new BufferedReader(fr);;
-        String logline = null;
+        String file = readFile("Logs.txt", Charset.forName("UTF-8"));
+        System.out.println(file.length());
+        if(file.length()<2){
+            System.out.println("Log is Empty");
+        }
         
-        //reading user info from file and filling userbase appropriately
-        while((logline = br.readLine()) != null) {
-            if(logline.length()!=0){
-                System.out.println(logline); //TESTING: YOU DON'T WANNA DO THIS IN THE FULL THING but it's a quick and handy reference for our testing purposes
-                String u = "";
-                String d = "";
-                long dat;
-                String t = "";
-                
-                while(Character.isLetterOrDigit(logline.charAt(0))){ //Retrieving username
-                    u = u + logline.charAt(0);
-                    logline = logline.substring(1);
-                }
-                if(Character.isWhitespace(logline.charAt(0))){ //Confirming end of username & moving to date long
-                    logline = logline.substring(1);
-                }
-                else{
-                    System.out.println("FILE FORMAT ERROR"); //THIS COULD BE A SERIOUS ISSUE WITH THE PROGRAM IF IT OCCURS and should probably throw an error that stops the entire thing
-                }
-                
-                while(Character.isDigit(logline.charAt(0))){ //Retrieving date long
-                    d = d + logline.charAt(0);
-                    if(logline.length()>1)
-                        logline = logline.substring(1);
-                    else
-                        break;
-                }
-                
-                if((logline = br.readLine()) != null){
-                    System.out.println(logline); //TESTING: YOU DON'T WANNA DO THIS IN THE FULL THING but it's a quick and handy reference for our testing purposes
-                    while(logline.length()>0){
-                        t = t + logline.charAt(0);
-                        if(logline.length()>1)
-                            logline = logline.substring(1);
-                        else
-                            break;
-                    }
-                }
-                
-                dat=Long.parseLong(d);
-                logbase.add(new Entry(u, t, new Date(dat)));
+        else{
+            String[] entries = file.split("/;E/;\n");
+            for(int i = 0; i < entries.length; i++){
+                System.out.println(entries[i]);                                   //For testing purposes only
+                String[] words = entries[i].split("/;e;/");
+                if(words.length > 3)
+                    throw new FileFormatException("File has become corrupt.");
+
+                long dat = Long.parseLong(words[1]);
+                logbase.add(new Entry(words[0], words[2], new Date(dat)));
             }
         }
-        br.close();
+    }
+    
+    /**
+     * Method to read the file
+     * @param path
+     * @param encoding
+     * @return
+     * @throws IOException 
+     */
+    private String readFile(String path, Charset encoding) throws IOException{
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
     
     
@@ -196,9 +181,16 @@ public class EntryList {
      * @throws IOException 
      */
     public void updateLogFile()throws IOException{
-    	FileWriter writer = new FileWriter("Logs.txt", false);
+    	/*FileWriter writer = new FileWriter("Logs.txt", false);
         try (BufferedWriter bw = new BufferedWriter(writer)) {
             bw.write(this.toString());
+        }*/
+        Writer out = new BufferedWriter(new OutputStreamWriter(new 
+                FileOutputStream("Logs.txt"), "UTF-8"));
+        try {
+            out.write(this.toString());
+        } finally {
+            out.close();
         }
     }
     
@@ -211,8 +203,7 @@ public class EntryList {
     public String toString(){
         String output = "";
         for(Entry e: logbase){
-            output += e.toString() + "\n";
-            output += "\n";
+            output += e.toString() + "/;E/;\n";
         }
         return output;
     }
