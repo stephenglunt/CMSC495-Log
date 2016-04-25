@@ -37,9 +37,17 @@ public class Entry {
         this.delete.setBorder(BorderFactory.createRaisedBevelBorder());
         this.entryText = new JTextArea();
         this.entryText.setBorder(BorderFactory.createRaisedBevelBorder());
-        this.entryText.setText(text);
+        this.entryText.setText(firstSentence());
    
         System.out.println(creationTime.toString()); //JUST TESTING, DO NOT INCLUDE LINE IN FINAL VERSION
+    }
+    
+    //Get first sentence of entry
+    public String firstSentence(){
+    	if(text.length() <= 50)
+    		return text + ".....";
+    	else
+    		return text.substring(0, 50) + ".....";
     }
     
     /**
@@ -54,9 +62,9 @@ public class Entry {
     /**
      * Returns Entry object as String formatted for viewing on screen.
      * @return 
-     */
+     */	
     public String view(){// MUST TEST FOR RETURNING PROPER STRING (for program)
-        return (creationTime.toString()+" - "+user+" - "+text); //MUST RETURN PROPER STRING
+        return (creationTime.toString()+" - "+user+"\n" + text); //MUST RETURN PROPER STRING
     }
     
     /**
