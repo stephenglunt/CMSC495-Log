@@ -3,6 +3,9 @@ package log;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -35,6 +38,9 @@ public class LOG extends JFrame{
     Checkbox isAdmin;
     JPanel panel = new JPanel();
     JPanel panelBottom = new JPanel();
+    JPanel viewEntryPanel = new JPanel();
+    JPanel textPanel = new JPanel();
+    JPanel buttonPanel = new JPanel();
     JButton loginButton = new JButton ("Login");
     JLabel user = new JLabel("Username");
     JTextField username = new JTextField (15);
@@ -330,6 +336,7 @@ public class LOG extends JFrame{
     	}
     	textArea = new JTextArea(5, 20);
     	textArea.setText(userList.viewUsers());
+    	textArea.setEditable(false);
     	scrollPane = new JScrollPane(textArea);
     	scrollPane.revalidate();
     	this.add(scrollPane,BorderLayout.CENTER);
@@ -382,25 +389,97 @@ public class LOG extends JFrame{
 
 	
     /**
-     * Log entries window
+     * Builds panel of entries with associated buttons
      */
     protected void viewLogEntries() {
+    	//Remove GUI elements
     	if(scrollPane != null){
             scrollPane.removeAll();
             this.remove(scrollPane);
     	}
     	panelBottom.removeAll();
+    	
         //Build panel of entries
-    	JPanel entryPanel = entryList.displayEntries(current.userStatus());
+    	viewEntryPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+    	viewEntryPanel.setLayout(new BorderLayout());
+    	textPanel.setLayout(new GridLayout(0,1));
+    	textPanel.setPreferredSize(new Dimension(450,100));
+    	buttonPanel.setPreferredSize(new Dimension(325,100));
+    	
+    	for(int i = 0; i < entryList.logbase.size();i++){
+    		Entry entry = entryList.logbase.get(i);
+    		//Add listeners to each button
+    		//View entry listener
+    		entry.view.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed (ActionEvent e){
+                    viewLogEntry(entry);
+                }
+            });
+    		//Edit listener
+    		entry.edit.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed (ActionEvent e){
+                    entryList.editLogEntry(entry);
+                }
+            });
+    		//Delete listener
+       		entry.delete.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed (ActionEvent e){
+                    entryList.deleteLogEntry(entry);
+                }
+            });
+       		
+       		//Add buttons to panel
+    		if(current.userStatus()){
+    			//Create button/text panel & add components
+        	    buttonPanel.setLayout(new GridLayout(0,3));
+    			buttonPanel.add(entry.view);
+    			buttonPanel.add(entry.edit);
+    			buttonPanel.add(entry.delete);
+    			textPanel.add(entry.entryText);
+    			viewEntryPanel.add(textPanel,BorderLayout.CENTER);
+    			viewEntryPanel.add(buttonPanel,BorderLayout.LINE_END);
+    		}
+    		else{
+    			//Create button/text panel & add components
+        	    buttonPanel.setLayout(new GridLayout(0,1));
+        	    buttonPanel.add(entry.view);
+    			textPanel.add(entry.entryText);
+    			viewEntryPanel.add(textPanel,BorderLayout.CENTER);
+    			viewEntryPanel.add(buttonPanel,BorderLayout.LINE_END);
+    		}
+    	}
+
+    	//Add container
+    	JPanel container = new JPanel(new FlowLayout(FlowLayout.LEADING, 2,2));
+        container.add(viewEntryPanel);
     	//Create text scroll pane
-        scrollPane = new JScrollPane (entryPanel);
+        scrollPane = new JScrollPane (container);
         scrollPane.revalidate();
     	this.add(scrollPane,BorderLayout.CENTER);
     	validate();
     	repaint();
     }
 
-    /**
+    protected void viewLogEntry(Entry entry) {
+    	//Remove GUI elements
+        scrollPane.removeAll();
+        this.remove(scrollPane);
+    	panelBottom.removeAll();
+    	textArea = new JTextArea(20, 20);
+    	textArea.setText(entryList.viewLogEntry(entry));
+    	textArea.setEditable(false);
+    	scrollPane = new JScrollPane(textArea);
+    	scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+        revalidate();
+        repaint();
+	}
+
+
+	/**
      * Brings up the Change Password menu
      * @param listClass
      * @param user 

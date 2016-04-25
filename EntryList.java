@@ -1,8 +1,5 @@
 package log;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -31,7 +27,6 @@ public class EntryList {
     
     List<Entry> logbase = new ArrayList<Entry>();
     JPanel panel = new JPanel();
-    Entry entry;
     Date today = new Date();
     
     /**
@@ -71,59 +66,7 @@ public class EntryList {
     private String readFile(String path, Charset encoding) throws IOException{
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
-    }
-    
-    
-    /**
-     * Builds panel of entries with associated buttons
-     * @param admin
-     * @return 
-     */
-    public JPanel displayEntries(Boolean admin){
-    	for(int i = 0; i < logbase.size();i++){
-    		entry = logbase.get(i);
-    		//Add listeners to each button
-    		//View entry listener
-    		entry.view.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed (ActionEvent e){
-                    viewLogEntry(entry);
-                }
-            });
-    		//Edit listener
-    		entry.edit.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed (ActionEvent e){
-                    viewLogEntry(entry);
-                }
-            });
-    		//Delete listener
-       		entry.delete.addActionListener(new ActionListener(){
-                @Override
-                public void actionPerformed (ActionEvent e){
-                    viewLogEntry(entry);
-                }
-            });
-       		
-    	    panel.setBorder(BorderFactory.createRaisedBevelBorder());
-    
-       		//Add buttons to panel
-    		if(admin){
-        	    panel.setLayout(new GridLayout(0,4));
-    			panel.add(entry.entryText);
-    			panel.add(entry.view);
-    			panel.add(entry.edit);
-    			panel.add(entry.delete);
-    		}
-    		else{
-        	    panel.setLayout(new GridLayout(0,2));
-    			panel.add(entry.entryText);
-    			panel.add(entry.view);
-    		}
-    	}
-    	return panel;
-    }
-    
+    } 
     
     /**
      * Add log entry to Logs.txt
@@ -149,9 +92,9 @@ public class EntryList {
         
     }
     
-    
-    public void viewLogEntry(Entry entry){//TODO
-        
+    //Returns entry creation date, creator, and text
+    public String viewLogEntry(Entry entry){
+    	return entry.view();
     }
     
     
