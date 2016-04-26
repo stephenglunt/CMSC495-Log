@@ -416,8 +416,14 @@ public class LOG extends JFrame{
                     viewLogEntry(entry);
                 }
             });
-    		//Edit listener
-    		entry.edit.addActionListener(new ActionListener(){
+                
+                //This makes sure that ActionListeners don't pile up.
+                for(ActionListener al: entry.delete.getActionListeners()){
+                    entry.delete.removeActionListener(al);
+                }
+
+                //Edit listener
+                entry.edit.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed (ActionEvent e){
                     entryList.editLogEntry(entry);
@@ -439,6 +445,7 @@ public class LOG extends JFrame{
                         }
                         
                 }
+                
             });
        		
        		//Add buttons to panel
