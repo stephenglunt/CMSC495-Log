@@ -99,7 +99,16 @@ public class EntryList {
     
     
     public void deleteLogEntry(Entry entry){//TODO
-        
+        logbase.remove(entry);
+        try {
+            updateLogFile();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(null, "Successfully deleted entry", 
+                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
     }
     
     
@@ -107,15 +116,16 @@ public class EntryList {
      * Clears Logs.txt file
      */
     public void deleteAllLogEntries(){
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter("Logs.txt");
-        	writer.print("");
-        	writer.close();
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "File Not Found!", "File Not Found", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		}
+        logbase.clear();
+        try {
+            updateLogFile();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(null, "Successfully deleted all entries", 
+                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
     }
     
     
