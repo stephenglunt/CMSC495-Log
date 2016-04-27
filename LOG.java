@@ -403,8 +403,8 @@ public class LOG extends JFrame{
     	viewEntryPanel.setBorder(BorderFactory.createRaisedBevelBorder());
     	viewEntryPanel.setLayout(new BorderLayout());
     	textPanel.setLayout(new GridLayout(0,1));
-    	textPanel.setPreferredSize(new Dimension(450,100));
-    	buttonPanel.setPreferredSize(new Dimension(325,100));
+        textPanel.removeAll();
+    	buttonPanel.removeAll();
     	
     	for(int i = 0; i < entryList.logbase.size();i++){
     		Entry entry = entryList.logbase.get(i);
@@ -416,8 +416,14 @@ public class LOG extends JFrame{
                     viewLogEntry(entry);
                 }
             });
-    		//Edit listener
-    		entry.edit.addActionListener(new ActionListener(){
+                
+                //This makes sure that ActionListeners don't pile up.
+                for(ActionListener al: entry.delete.getActionListeners()){
+                    entry.delete.removeActionListener(al);
+                }
+
+                //Edit listener
+                entry.edit.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed (ActionEvent e){
                     entryList.editLogEntry(entry);
@@ -427,13 +433,28 @@ public class LOG extends JFrame{
        		entry.delete.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed (ActionEvent e){
-                    entryList.deleteLogEntry(entry);
+                    String[] options = new String[] {"Yes", "No"};
+                        int selection = JOptionPane.showOptionDialog(null, "This CANNOT be undone. Are you sure?", "Delete Log Entry", //GUHHHH DOING THE SAME THINGIE AS THE OLDER PROBLEM WE HAD WITH BUTTONS
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                            null, options, options[0]);
+                        revalidate();
+                        repaint();
+                        if(selection == 0){
+                            entryList.deleteLogEntry(entry);
+                            viewLogEntries();
+                        }
+                        
                 }
+                
             });
        		
        		//Add buttons to panel
     		if(current.userStatus()){
     			//Create button/text panel & add components
+                    entry.entryText.setPreferredSize(new Dimension (450,20));
+                    entry.view.setPreferredSize(new Dimension (318/3, 20));
+                    entry.edit.setPreferredSize(new Dimension (318/3, 20));
+                    entry.delete.setPreferredSize(new Dimension (318/3, 20));
         	    buttonPanel.setLayout(new GridLayout(0,3));
     			buttonPanel.add(entry.view);
     			buttonPanel.add(entry.edit);
@@ -444,6 +465,8 @@ public class LOG extends JFrame{
     		}
     		else{
     			//Create button/text panel & add components
+                    entry.entryText.setPreferredSize(new Dimension (450,20));
+                    entry.view.setPreferredSize(new Dimension (318, 20));
         	    buttonPanel.setLayout(new GridLayout(0,1));
         	    buttonPanel.add(entry.view);
     			textPanel.add(entry.entryText);
@@ -577,7 +600,6 @@ public class LOG extends JFrame{
         panel.add(pass);
         password.setText("");
         panel.add(password);
-        //JTextField uName = new JTextField(20);
         isAdmin = new Checkbox("Admin");
         panel.add(new JLabel("Admin"));
         panel.add(isAdmin);
