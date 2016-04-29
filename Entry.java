@@ -16,17 +16,13 @@ public class Entry {
     private final String user;
     private String text;
     private final Date creationTime;
-    //private Calendar cal; NOT NEEDED?
     JButton view,edit,delete;
     JTextArea entryText;
     
-    public Entry(String username, String logText, Date time){ //MUST TEST
+    public Entry(String username, String logText, Date time){
         user = username;
         text = logText;
         creationTime = time;
-        
-        //cal = Calendar.getInstance(); NO?
-        //cal.setTime(creationTime); NO?
         
         //Add buttons/text area to each entry
         this.view = new JButton("View Entry");
@@ -38,6 +34,7 @@ public class Entry {
         this.entryText = new JTextArea();
         this.entryText.setBorder(BorderFactory.createRaisedBevelBorder());
         this.entryText.setText(firstSentence());
+        this.entryText.setEditable(false);
    
         System.out.println(creationTime.toString()); //JUST TESTING, DO NOT INCLUDE LINE IN FINAL VERSION
     }
@@ -55,16 +52,20 @@ public class Entry {
      * @return
      */
     @Override
-    public String toString(){ //MUST TEST FOR RETURNING PROPER STRING (for file)
-        return (user+"/;e;/"+creationTime.getTime()+"/;e;/"+text);//MUST RETURN PROPER STRING
+    public String toString(){
+        return (user+"/;e;/"+creationTime.getTime()+"/;e;/"+text);
     }
     
     /**
      * Returns Entry object as String formatted for viewing on screen.
      * @return 
      */	
-    public String view(){// MUST TEST FOR RETURNING PROPER STRING (for program)
-        return (creationTime.toString()+" - "+user+"\n" + text); //MUST RETURN PROPER STRING
+    public String view(){
+        return (creationTime.toString()+" - "+user+"\n" + text);
+    }
+    
+    public String getText(){
+        return text;
     }
     
     /**
@@ -72,6 +73,9 @@ public class Entry {
      * @param newText 
      */
     public void edit(String newText){
+        this.entryText.setEditable(true);
         text = newText;
+        this.entryText.setText(firstSentence());
+        this.entryText.setEditable(false);
     }
 }
