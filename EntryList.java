@@ -34,7 +34,7 @@ public class EntryList {
      * @throws IOException
      * @throws FileFormatException 
      */
-    public EntryList() throws IOException, FileFormatException{ //LOG BASE HAS BEEN BUILT BUT MUST BE TESTED THOROUGHLY!
+    public EntryList() throws IOException, FileFormatException{
         
         String file = readFile("Logs.txt", Charset.forName("UTF-8"));
         System.out.println(file.length());
@@ -88,8 +88,17 @@ public class EntryList {
     }
     
     
-    public void editLogEntry(Entry entry){//TODO
-        
+    public void editLogEntry(Entry entry, String newText){//TODO: REWRITE TO INCLUDE STRING
+        entry.edit(newText);
+        try {
+            updateLogFile();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
+                "Error!",JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(null, "Successfully edited entry", 
+                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
     }
     
     //Returns entry creation date, creator, and text
@@ -98,7 +107,7 @@ public class EntryList {
     }
     
     
-    public void deleteLogEntry(Entry entry){//TODO
+    public void deleteLogEntry(Entry entry){
         logbase.remove(entry);
         try {
             updateLogFile();
