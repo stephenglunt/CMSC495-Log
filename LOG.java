@@ -56,6 +56,7 @@ public class LOG extends JFrame{
     JButton accountManagement = new JButton ("Account Management");
     JButton savePassword = new JButton ("Save Password");
     JButton saveEntry = new JButton ("Save Entry");
+    JButton saveEdit = new JButton ("Save Edit");
     JButton addUser = new JButton ("Add User");//
     JButton mainMenu = new JButton("Main Menu");
     JButton viewUsers = new JButton("View Users");
@@ -69,6 +70,7 @@ public class LOG extends JFrame{
     UserList userList;
     EntryList entryList;
     String editName;
+    Entry editing;
     
     /**
      * This creates the GUI and userList which is loaded from Users.txt
@@ -96,6 +98,8 @@ public class LOG extends JFrame{
             submit.setBorder(BorderFactory.createRaisedBevelBorder());
             saveEntry.setBorder(BorderFactory.createRaisedBevelBorder());
             saveEntry.setBackground(Color.GREEN);
+            saveEdit.setBorder(BorderFactory.createRaisedBevelBorder());
+            saveEdit.setBackground(Color.GREEN);
             panel.add(user);
             panel.add (username);
             panel.add(pass);
@@ -200,6 +204,21 @@ public class LOG extends JFrame{
                 		  JOptionPane.showMessageDialog(frame, "Entry text cannot be blank!",
                 				  "Blank Log Entry",JOptionPane.WARNING_MESSAGE);
                 	  }
+                }
+            });
+            
+            //Call log entry edit saving function
+            saveEdit.addActionListener(new ActionListener(){
+                public void actionPerformed (ActionEvent e){
+                    String data = textArea.getText().trim();
+                    if(!data.equals("")){
+                        entryList.editLogEntry(editing, data);
+                        mainMenu();
+                    }
+                    else{
+                	JOptionPane.showMessageDialog(frame, "Entry text cannot be blank!",
+                            "Blank Log Entry",JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             });
             
@@ -386,8 +405,25 @@ public class LOG extends JFrame{
         revalidate();
         repaint();
     }
-
-	
+    
+    //Log entry editing window
+    protected void editLogEntry(Entry e){
+        editing = e;
+        //Update GUI
+    	if(scrollPane != null){
+            scrollPane.removeAll();
+            this.remove(scrollPane);
+    	}
+    	textArea = new JTextArea(5, 20);
+        textArea.setText(e.getText());
+    	scrollPane = new JScrollPane(textArea);
+    	scrollPane.revalidate();
+    	this.add(scrollPane,BorderLayout.CENTER);
+        panelBottom.add(saveEdit,BorderLayout.PAGE_END);
+        revalidate();
+        repaint();
+    }
+    
     /**
      * Builds panel of entries with associated buttons
      */
@@ -418,6 +454,9 @@ public class LOG extends JFrame{
             });
                 
                 //This makes sure that ActionListeners don't pile up.
+                for(ActionListener al: entry.edit.getActionListeners()){
+                    entry.edit.removeActionListener(al);
+                }
                 for(ActionListener al: entry.delete.getActionListeners()){
                     entry.delete.removeActionListener(al);
                 }
@@ -425,8 +464,8 @@ public class LOG extends JFrame{
                 //Edit listener
                 entry.edit.addActionListener(new ActionListener(){
                 @Override
-                public void actionPerformed (ActionEvent e){
-                    entryList.editLogEntry(entry);
+                public void actionPerformed (ActionEvent e){//DO THIS TODAY
+                    editLogEntry(entry);
                 }
             });
     		//Delete listener
