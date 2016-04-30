@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -212,6 +213,9 @@ public class LOG extends JFrame{
                 public void actionPerformed (ActionEvent e){
                     String data = textArea.getText().trim();
                     if(!data.equals("")){
+                        Date today = new Date();
+                        data = data + "\n\nEdited by: " + current.getName() + 
+                                " at " + today.toString() + ".";
                         entryList.editLogEntry(editing, data);
                         mainMenu();
                     }
