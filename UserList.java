@@ -32,7 +32,6 @@ public class UserList {
         //reading user info from file and filling userbase appropriately
         while((userline = br.readLine()) != null) {
             if(userline.length()!=0){
-                System.out.println(userline); //TESTING: YOU DON'T WANNA DO THIS IN THE FULL THING but it's a quick and handy reference for our testing purposes
                 //Break the userline up using spaces as delimiter
                 String[] words = userline.split(" ");
 
@@ -111,11 +110,11 @@ public class UserList {
             updateUserFile();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully added user", 
-                "User List Updated", JOptionPane.WARNING_MESSAGE);
+                "User List Updated", JOptionPane.PLAIN_MESSAGE);
     }
 
     /**
@@ -129,11 +128,11 @@ public class UserList {
             updateUserFile();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully deleted user", 
-                "User List Updated", JOptionPane.WARNING_MESSAGE);
+                "User List Updated", JOptionPane.PLAIN_MESSAGE);
     }
 
     /**
@@ -148,7 +147,7 @@ public class UserList {
         } 
         catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -164,7 +163,7 @@ public class UserList {
             updateUserFile();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Error Updating Users.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
         String status;
@@ -173,7 +172,7 @@ public class UserList {
         else
             status = "basic user.";
         JOptionPane.showMessageDialog(null, "Successfully changed user status to " + status, 
-                "User List Updated", JOptionPane.WARNING_MESSAGE);
+                "User List Updated", JOptionPane.PLAIN_MESSAGE);
 
     }
 
