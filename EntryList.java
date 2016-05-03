@@ -37,7 +37,6 @@ public class EntryList {
     public EntryList() throws IOException, FileFormatException{
         
         String file = readFile("Logs.txt", Charset.forName("UTF-8"));
-        System.out.println(file.length());
         if(file.length()<2){
             System.out.println("Log is Empty");
         }
@@ -45,7 +44,6 @@ public class EntryList {
         else{
             String[] entries = file.split("/;E/;\n");
             for(int i = 0; i < entries.length; i++){
-                System.out.println(entries[i]);                                   //For testing purposes only
                 String[] words = entries[i].split("/;e;/");
                 if(words.length > 3)
                     throw new FileFormatException("File has become corrupt.");
@@ -80,25 +78,25 @@ public class EntryList {
             updateLogFile();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully added entry", 
-                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
+                "Entry List Updated", JOptionPane.PLAIN_MESSAGE);
     }
     
     
-    public void editLogEntry(Entry entry, String newText){//TODO: REWRITE TO INCLUDE STRING
+    public void editLogEntry(Entry entry, String newText){
         entry.edit(newText);
         try {
             updateLogFile();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully edited entry", 
-                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
+                "Entry List Updated", JOptionPane.PLAIN_MESSAGE);
     }
     
     //Returns entry creation date, creator, and text
@@ -113,11 +111,11 @@ public class EntryList {
             updateLogFile();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully deleted entry", 
-                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
+                "Entry List Updated", JOptionPane.PLAIN_MESSAGE);
     }
     
     
@@ -130,11 +128,11 @@ public class EntryList {
             updateLogFile();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Updating Logs.txt File",
-                "Error!",JOptionPane.WARNING_MESSAGE);
+                "Error!",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         JOptionPane.showMessageDialog(null, "Successfully deleted all entries", 
-                "Entry List Updated", JOptionPane.WARNING_MESSAGE);
+                "Entry List Updated", JOptionPane.PLAIN_MESSAGE);
     }
     
     
@@ -143,11 +141,7 @@ public class EntryList {
      * @throws IOException 
      */
     public void updateLogFile()throws IOException{
-    	/*FileWriter writer = new FileWriter("Logs.txt", false);
-        try (BufferedWriter bw = new BufferedWriter(writer)) {
-            bw.write(this.toString());
-        }*/
-        Writer out = new BufferedWriter(new OutputStreamWriter(new 
+    	Writer out = new BufferedWriter(new OutputStreamWriter(new 
                 FileOutputStream("Logs.txt"), "UTF-8"));
         try {
             out.write(this.toString());
