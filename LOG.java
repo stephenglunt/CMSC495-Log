@@ -1,4 +1,4 @@
-package Log;
+package log;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
@@ -129,6 +129,8 @@ public class LOG extends JFrame{
                 if(userList.checkUserCredentials(username.getText(), password)){
                     current = userList.getUser(username.getText());
                     login = true;
+                    JOptionPane.showMessageDialog(null, "Welcome, " + current.getName() + "!", 
+                        "Welcome!", JOptionPane.PLAIN_MESSAGE);
                     mainMenu();
 
                             // Check if password needs changed
@@ -284,7 +286,7 @@ public class LOG extends JFrame{
                 }
             });
             
-            findUser.addActionListener(new ActionListener(){ //MOVE
+            findUser.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed (ActionEvent e){
                     if(userList.getUser(username.getText()) == null){
@@ -299,7 +301,7 @@ public class LOG extends JFrame{
                 }
             });
         
-            cancel.addActionListener(new ActionListener(){ //MOVE
+            cancel.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed (ActionEvent e){
                     accountManage();
@@ -307,7 +309,7 @@ public class LOG extends JFrame{
             });
             
             // Delete user listener
-            delete.addActionListener(new ActionListener(){ //MOVE
+            delete.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     userList.deleteUser(editName);
                     accountManage();
@@ -315,7 +317,7 @@ public class LOG extends JFrame{
             });
         
             // Status change listener
-            update.addActionListener(new ActionListener(){ //MOVE
+            update.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     userList.setStatus(editName, isAdmin.getState());
                     accountManage();
@@ -323,14 +325,14 @@ public class LOG extends JFrame{
             });
         
             // Password change listener
-            chngPswd.addActionListener(new ActionListener(){ //MOVE
+            chngPswd.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     changePassword(userList, userObjct);
                 }
             });
             
             // Submit button listener
-            submit.addActionListener(new ActionListener(){ //MOVE
+            submit.addActionListener(new ActionListener(){
                 public void actionPerformed (ActionEvent e){
                     try {
                         userList.addUser(username.getText(), password.getText(), isAdmin.getState());
@@ -470,7 +472,7 @@ public class LOG extends JFrame{
                 //Edit listener
                 entry.edit.addActionListener(new ActionListener(){
                 @Override
-                public void actionPerformed (ActionEvent e){//DO THIS TODAY
+                public void actionPerformed (ActionEvent e){
                     editLogEntry(entry);
                 }
             });
@@ -479,7 +481,7 @@ public class LOG extends JFrame{
                 @Override
                 public void actionPerformed (ActionEvent e){
                     String[] options = new String[] {"Yes", "No"};
-                        int selection = JOptionPane.showOptionDialog(null, "This CANNOT be undone. Are you sure?", "Delete Log Entry", //GUHHHH DOING THE SAME THINGIE AS THE OLDER PROBLEM WE HAD WITH BUTTONS
+                        int selection = JOptionPane.showOptionDialog(null, "This CANNOT be undone. Are you sure?", "Delete Log Entry",
                             JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                             null, options, options[0]);
                         revalidate();
@@ -565,11 +567,10 @@ public class LOG extends JFrame{
         panel.revalidate();
         panel.repaint();
 
-        //DO NOT CHANGE PASSWORD IMMEDIATELY WHEN CALLING THIS METHOD. Must call and check for password change through button press
     }
     
     /**
-     * Launches the Account Management interface - still needs work.
+     * Launches the Account Management interface
      */
     protected void accountManage(){
     	panelBottom.removeAll();
@@ -667,8 +668,6 @@ public class LOG extends JFrame{
     	}
         panel.removeAll();
         
-        System.out.println("Welcome, " + current.getName() + "!"); //CURRENTLY JUST TESTING, should probably print elsewhere
-        System.out.println("Admin? " + current.userStatus());
         // Switch to main menu
         panel.add(viewLogEntries);
         panel.add(createLogEntry);
