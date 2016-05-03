@@ -1,4 +1,4 @@
-package log;
+package Log;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
@@ -108,6 +108,7 @@ public class LOG extends JFrame{
             panel.add (loginButton);
             this.add(panel, BorderLayout.PAGE_START);
             this.add(panelBottom, BorderLayout.PAGE_END);
+            this.getRootPane().setDefaultButton(loginButton);
 	        
             //Create GUI
             setTitle ("LOG");
@@ -120,7 +121,7 @@ public class LOG extends JFrame{
             /**
              * Add listeners to buttons
              * Login listener
-             */
+             */        
 	    loginButton.addActionListener (new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
                 // Check if login is valid
@@ -162,6 +163,7 @@ public class LOG extends JFrame{
                     panel.add(pass);
                     panel.add (passwordHidden);
                     panel.add (loginButton);
+                    panel.getRootPane().setDefaultButton(loginButton);
                     revalidate();
                     repaint();
                 }
